@@ -60,7 +60,7 @@ def to_device(x, device=def_device):
     if isinstance(x, Mapping): return {k:v.to(device) for k, v in x.items()}
     return type(x)(o.to(device) for o in x)
 
-# %% ../nbs/00_core.ipynb 53
+# %% ../nbs/00_core.ipynb 54
 def to_cpu(x):
     if isinstance(x, Mapping): return {k:to_cpu(v) for k,v in x.items()}
     if isinstance(x, list): return [to_cpu(o) for o in x]
@@ -68,15 +68,15 @@ def to_cpu(x):
     res = x.detach().cpu()
     return res.float() if res.dtype==torch.float16 else res
 
-# %% ../nbs/00_core.ipynb 55
+# %% ../nbs/00_core.ipynb 56
 class CancelFitException(Exception): pass
 class CancelBatchException(Exception): pass
 class CancelEpochException(Exception): pass
 
-# %% ../nbs/00_core.ipynb 57
+# %% ../nbs/00_core.ipynb 58
 class Callback(): order = 0
 
-# %% ../nbs/00_core.ipynb 59
+# %% ../nbs/00_core.ipynb 60
 class with_cbs:
     def __init__(self, nm): self.nm = nm
     def __call__(self, f):
@@ -89,13 +89,13 @@ class with_cbs:
             finally: o.callback(f'cleanup_{self.nm}')
         return _f
 
-# %% ../nbs/00_core.ipynb 61
+# %% ../nbs/00_core.ipynb 62
 def run_cbs(cbs, method_nm, learn=None):
     for cb in sorted(cbs, key=attrgetter('order')):
         method = getattr(cb, method_nm, None)
         if method is not None: method(learn)
 
-# %% ../nbs/00_core.ipynb 63
+# %% ../nbs/00_core.ipynb 64
 class Learner():
     def __init__(self, model, dls=(0,), loss_func=F.mse_loss, lr=0.1, cbs=None, opt_func=optim.SGD):
         cbs = fc.L(cbs)
@@ -151,7 +151,7 @@ class Learner():
     @property
     def training(self): return self.model.training
 
-# %% ../nbs/00_core.ipynb 65
+# %% ../nbs/00_core.ipynb 66
 class TrainLearner(Learner):
     def predict(self): self.preds = self.model(self.batch[0])
     def get_loss(self): self.loss = self.loss_func(self.preds, self.batch[1])
@@ -159,18 +159,18 @@ class TrainLearner(Learner):
     def step(self): self.opt.step()
     def zero_grad(self): self.opt.zero_grad()
 
-# %% ../nbs/00_core.ipynb 67
+# %% ../nbs/00_core.ipynb 68
 class DeviceCB(Callback):
     def __init__(self, device=def_device): fc.store_attr()
     def before_fit(self, learn): learn.model.to(self.device)
     def before_batch(self, learn): learn.batch = to_device(learn.batch, device=self.device)
 
-# %% ../nbs/00_core.ipynb 69
+# %% ../nbs/00_core.ipynb 70
 class SingleBatchCB(Callback):
     order = 1
     def after_batch(self, learn): raise CancelFitException()
 
-# %% ../nbs/00_core.ipynb 71
+# %% ../nbs/00_core.ipynb 72
 class TrainCB(Callback):
     def __init__(self, n_inp=1): self.n_inp = n_inp
     def predict(self, learn): learn.preds = learn.model(*learn.batch[:self.n_inp])
@@ -179,7 +179,7 @@ class TrainCB(Callback):
     def step(self, learn): learn.opt.step()
     def zero_grad(self, learn): learn.opt.zero_grad()
 
-# %% ../nbs/00_core.ipynb 73
+# %% ../nbs/00_core.ipynb 74
 class MetricsCB(Callback):
     def __init__(self, *ms, **metrics):
         for o in ms: metrics[type(o).__name__] = o
@@ -201,7 +201,7 @@ class MetricsCB(Callback):
         for m in self.metrics.values(): m.update(to_cpu(learn.preds), y)
         self.loss.update(to_cpu(learn.loss), weight=len(x))
 
-# %% ../nbs/00_core.ipynb 74
+# %% ../nbs/00_core.ipynb 75
 class ProgressCB(Callback):
     order = MetricsCB.order+1
     def __init__(self, plot=False): self.plot = plot
@@ -231,7 +231,7 @@ class ProgressCB(Callback):
                 self.val_losses.append(learn.metrics.all_metrics['loss'].compute())
                 self.mbar.update_graph([[fc.L.range(self.losses), self.losses],[fc.L.range(learn.epoch+1).map(lambda x: (x+1)*len(learn.dls.train)), self.val_losses]])
 
-# %% ../nbs/00_core.ipynb 76
+# %% ../nbs/00_core.ipynb 77
 class LRFinderCB(Callback):
     def __init__(self, gamma=1.3, max_mult=3, av_over=1): fc.store_attr()
     
@@ -264,12 +264,12 @@ class LRFinderCB(Callback):
         plt.ylabel('loss')
         plt.xscale('log')
 
-# %% ../nbs/00_core.ipynb 77
+# %% ../nbs/00_core.ipynb 78
 @fc.patch
 def lr_find(self:Learner, gamma=1.3, max_mult=3, start_lr=1e-5, max_epochs=10, av_over=1):
     self.fit(max_epochs, lr=start_lr, cbs=LRFinderCB(gamma=gamma, max_mult=max_mult, av_over=av_over))
 
-# %% ../nbs/00_core.ipynb 79
+# %% ../nbs/00_core.ipynb 80
 @fc.delegates(plt.Axes.imshow)
 def show_image(im, ax=None, figsize=None, title=None, noframe=True, **kwargs):
     "Show a PIL or PyTorch image on `ax`."
@@ -286,7 +286,7 @@ def show_image(im, ax=None, figsize=None, title=None, noframe=True, **kwargs):
     if noframe: ax.axis('off')
     return ax
 
-# %% ../nbs/00_core.ipynb 80
+# %% ../nbs/00_core.ipynb 81
 @fc.delegates(plt.subplots, keep=True)
 def subplots(
     nrows:int=1, # Number of rows in returned axes grid
@@ -302,7 +302,7 @@ def subplots(
     if nrows*ncols==1: a = array([ax])
     return fig, ax
 
-# %% ../nbs/00_core.ipynb 81
+# %% ../nbs/00_core.ipynb 82
 @fc.delegates(subplots)
 def get_grid(
     n:int, # Number of axes
@@ -323,7 +323,7 @@ def get_grid(
     if title is not None: fig.suptitle(title, weight=weight, size=size)
     return fig, axs
 
-# %% ../nbs/00_core.ipynb 82
+# %% ../nbs/00_core.ipynb 83
 @fc.delegates(subplots)
 def show_images(
     ims:list, # Images to show
@@ -336,7 +336,7 @@ def show_images(
     axs = get_grid(len(ims), **kwargs)[1].flat
     for im, t, ax in zip_longest(ims, titles or [], axs): show_image(im, ax=ax, title=t, noframe=noframe)
 
-# %% ../nbs/00_core.ipynb 84
+# %% ../nbs/00_core.ipynb 85
 class Hook():
     def __init__(self, m, f): self.hook = m.register_forward_hook(partial(f, self))
     def remove(self): self.hook.remove()
@@ -348,7 +348,7 @@ def append_stats(hook, mod, inp, outp):
     hook.stats[0].append(acts.mean())
     hook.stats[1].append(acts.std())
 
-# %% ../nbs/00_core.ipynb 85
+# %% ../nbs/00_core.ipynb 86
 class Hooks(list):
     def __init__(self, ms, f): super().__init__([Hook(m, f) for m in ms])
     def __enter__(self, *args): return self
@@ -360,7 +360,7 @@ class Hooks(list):
     def remove(self):
         for h in self: h.remove()
 
-# %% ../nbs/00_core.ipynb 86
+# %% ../nbs/00_core.ipynb 87
 class HooksCallback(Callback):
     def __init__(self, hookfunc, mod_filter=fc.noop, on_train=True, on_valid=False, mods=None):
         fc.store_attr()
@@ -378,7 +378,7 @@ class HooksCallback(Callback):
     def __iter__(self): return iter(self.hooks)
     def __len__(self): return len(self.hooks)
 
-# %% ../nbs/00_core.ipynb 87
+# %% ../nbs/00_core.ipynb 88
 def append_stats(hook, mod, inp, outp):
     if not hasattr(hook, 'stats'): hook.stats = ([], [], [])
     acts = to_cpu(outp)
@@ -386,16 +386,16 @@ def append_stats(hook, mod, inp, outp):
     hook.stats[1].append(acts.std())
     hook.stats[2].append(acts.abs().histc(40, 0, 10))
 
-# %% ../nbs/00_core.ipynb 88
+# %% ../nbs/00_core.ipynb 89
 # Thanks to @ste for the initial version of the histogram plotting code
 def get_hist(h): return torch.stack(h.stats[2]).t().float().log1p()
 
-# %% ../nbs/00_core.ipynb 89
+# %% ../nbs/00_core.ipynb 90
 def get_min(h):
     h1 = torch.stack(h.stats[2]).t().float()
     return h1[:2].sum(0)/h1.sum(0)
 
-# %% ../nbs/00_core.ipynb 90
+# %% ../nbs/00_core.ipynb 91
 class ActivationStats(HooksCallback):
     def __init__(self, mod_filter=fc.noop): super().__init__(append_stats, mod_filter)
 
@@ -418,7 +418,7 @@ class ActivationStats(HooksCallback):
         axs[1].set_title('Stdevs')
         plt.legend(fc.L.range(self))
 
-# %% ../nbs/00_core.ipynb 92
+# %% ../nbs/00_core.ipynb 93
 def clean_ipython_hist():
     # Code in this function mainly copied from IPython source
     if not 'get_ipython' in globals(): return
@@ -433,7 +433,7 @@ def clean_ipython_hist():
     hm.input_hist_raw[:] = [''] * pc
     hm._i = hm._ii = hm._iii = hm._i00 =  ''
 
-# %% ../nbs/00_core.ipynb 93
+# %% ../nbs/00_core.ipynb 94
 def clean_tb():
     # h/t Piotr Czapla
     if hasattr(sys, 'last_traceback'):
@@ -442,18 +442,18 @@ def clean_tb():
     if hasattr(sys, 'last_type'): delattr(sys, 'last_type')
     if hasattr(sys, 'last_value'): delattr(sys, 'last_value')
 
-# %% ../nbs/00_core.ipynb 94
+# %% ../nbs/00_core.ipynb 95
 def clean_mem():
     clean_tb()
     clean_ipython_hist()
     gc.collect()
     torch.cuda.empty_cache()
 
-# %% ../nbs/00_core.ipynb 96
+# %% ../nbs/00_core.ipynb 97
 def init_weights(m, leaky=0.):
     if isinstance(m, (nn.Conv1d, nn.Conv2d, nn.Conv3d, nn.Linear)): init.kaiming_normal_(m.weight, a=leaky)
 
-# %% ../nbs/00_core.ipynb 97
+# %% ../nbs/00_core.ipynb 98
 class GeneralRelu(nn.Module):
     def __init__(self, leak=None, sub=None, maxv=None):
         super().__init__()
