@@ -1,9 +1,0 @@
-project:
-  output-dir: _docs
-
-website:
-  title: "atai"
-  site-url: "https://frenio.github.io/atai"
-  description: "Atomic AI – An attempt at a minimalist, flexible deep learning framework for diverse models."
-  repo-branch: main
-  repo-url: "https://github.com/frenio/atai"
