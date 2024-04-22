@@ -16,7 +16,7 @@ from collections.abc import Mapping
 from operator import attrgetter
 from copy import copy
 from functools import partial
-from typing import Literal, Optional, Sequence
+from typing import Any, Literal, Optional, Sequence
 
 import torch
 import torch.nn.functional as F
