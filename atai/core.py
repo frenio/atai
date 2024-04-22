@@ -291,11 +291,11 @@ def show_image(im, ax=None, figsize=None, title=None, noframe=True, **kwargs):
 # %% ../nbs/00_core.ipynb 80
 @fc.delegates(plt.subplots, keep=True)
 def subplots(
-    nrows:int=1, # Number of rows in returned axes grid
-    ncols:int=1, # Number of columns in retruned axes grid
-    figsize:Sequence=None, # Width, height in inches of the returned figure
-    imsize:int=3, # Size (in inches) of images that will be displayed in the returned figure
-    suptitle:str=None, # Title to be set to returned figure
+    nrows=1, # Number of rows in returned axes grid
+    ncols=1, # Number of columns in retruned axes grid
+    figsize=None, # Width, height in inches of the returned figure
+    imsize=3, # Size (in inches) of images that will be displayed in the returned figure
+    suptitle=None, # Title to be set to returned figure
     **kwargs): # fig and axs
     """A figure and set of subplots to display images of `imsize` inches."""
     if figsize is None: figsize=(ncols*imsize, nrows*imsize)
@@ -304,15 +304,15 @@ def subplots(
     if nrows*ncols==1: a = array([ax])
     return fig, ax
 
-# %% ../nbs/00_core.ipynb 82
+# %% ../nbs/00_core.ipynb 81
 @fc.delegates(subplots)
 def get_grid(
-    n:int, # Number of axes
-    nrows:int=None, # Number of rows, defaulting to `int(math.sqrt(n))`
-    ncols:int=None, # Number of columns, defaulting to `ceil(n/rows)`
-    title:str=None, # If passed, title set to the figure
-    weight:str='bold', # Title font weight
-    size:int=14, # Title font size
+    n, # Number of axes
+    nrows=None, # Number of rows, defaulting to `int(math.sqrt(n))`
+    ncols=None, # Number of columns, defaulting to `ceil(n/rows)`
+    title=None, # If passed, title set to the figure
+    weight='bold', # Title font weight
+    size=14, # Title font size
     **kwargs): # fig and axs
     """Return a grid of `n` axes, `nrows` by `ncols`."""
     if nrows: ncols = ncols or int(np.ceil(n/nrows))
@@ -325,20 +325,20 @@ def get_grid(
     if title is not None: fig.suptitle(title, weight=weight, size=size)
     return fig, axs
 
-# %% ../nbs/00_core.ipynb 83
+# %% ../nbs/00_core.ipynb 82
 @fc.delegates(subplots)
 def show_images(
     ims:list, # Images to show
-    nrows:int=1, # Number of rows in grid
-    ncols:int=None, # Number of columns in grid (auto-calculated if None)
-    titles:list=None, # Optional list of titles for each image
-    noframe:bool=True, # Hide axes, yes or no
+    nrows=1, # Number of rows in grid
+    ncols=None, # Number of columns in grid (auto-calculated if None)
+    titles=None, # Optional list of titles for each image
+    noframe=True, # Hide axes, yes or no
     **kwargs):
     """Show all images `ims` as subplots with `nrows` using `titles`."""
     axs = get_grid(len(ims), **kwargs)[1].flat
     for im, t, ax in zip_longest(ims, titles or [], axs): show_image(im, ax=ax, title=t, noframe=noframe)
 
-# %% ../nbs/00_core.ipynb 85
+# %% ../nbs/00_core.ipynb 84
 class Hook():
     def __init__(self, m, f): self.hook = m.register_forward_hook(partial(f, self))
     def remove(self): self.hook.remove()
@@ -350,7 +350,7 @@ def append_stats(hook, mod, inp, outp):
     hook.stats[0].append(acts.mean())
     hook.stats[1].append(acts.std())
 
-# %% ../nbs/00_core.ipynb 86
+# %% ../nbs/00_core.ipynb 85
 class Hooks(list):
     def __init__(self, ms, f): super().__init__([Hook(m, f) for m in ms])
     def __enter__(self, *args): return self
@@ -362,7 +362,7 @@ class Hooks(list):
     def remove(self):
         for h in self: h.remove()
 
-# %% ../nbs/00_core.ipynb 87
+# %% ../nbs/00_core.ipynb 86
 class HooksCallback(Callback):
     def __init__(self, hookfunc, mod_filter=fc.noop, on_train=True, on_valid=False, mods=None):
         fc.store_attr()
@@ -380,7 +380,7 @@ class HooksCallback(Callback):
     def __iter__(self): return iter(self.hooks)
     def __len__(self): return len(self.hooks)
 
-# %% ../nbs/00_core.ipynb 88
+# %% ../nbs/00_core.ipynb 87
 def append_stats(hook, mod, inp, outp):
     if not hasattr(hook, 'stats'): hook.stats = ([], [], [])
     acts = to_cpu(outp)
@@ -388,16 +388,16 @@ def append_stats(hook, mod, inp, outp):
     hook.stats[1].append(acts.std())
     hook.stats[2].append(acts.abs().histc(40, 0, 10))
 
-# %% ../nbs/00_core.ipynb 89
+# %% ../nbs/00_core.ipynb 88
 # Thanks to @ste for the initial version of the histogram plotting code
 def get_hist(h): return torch.stack(h.stats[2]).t().float().log1p()
 
-# %% ../nbs/00_core.ipynb 90
+# %% ../nbs/00_core.ipynb 89
 def get_min(h):
     h1 = torch.stack(h.stats[2]).t().float()
     return h1[:2].sum(0)/h1.sum(0)
 
-# %% ../nbs/00_core.ipynb 91
+# %% ../nbs/00_core.ipynb 90
 class ActivationStats(HooksCallback):
     def __init__(self, mod_filter=fc.noop): super().__init__(append_stats, mod_filter)
 
@@ -420,7 +420,7 @@ class ActivationStats(HooksCallback):
         axs[1].set_title('Stdevs')
         plt.legend(fc.L.range(self))
 
-# %% ../nbs/00_core.ipynb 93
+# %% ../nbs/00_core.ipynb 92
 def clean_ipython_hist():
     # Code in this function mainly copied from IPython source
     if not 'get_ipython' in globals(): return
@@ -435,7 +435,7 @@ def clean_ipython_hist():
     hm.input_hist_raw[:] = [''] * pc
     hm._i = hm._ii = hm._iii = hm._i00 =  ''
 
-# %% ../nbs/00_core.ipynb 94
+# %% ../nbs/00_core.ipynb 93
 def clean_tb():
     # h/t Piotr Czapla
     if hasattr(sys, 'last_traceback'):
@@ -444,18 +444,18 @@ def clean_tb():
     if hasattr(sys, 'last_type'): delattr(sys, 'last_type')
     if hasattr(sys, 'last_value'): delattr(sys, 'last_value')
 
-# %% ../nbs/00_core.ipynb 95
+# %% ../nbs/00_core.ipynb 94
 def clean_mem():
     clean_tb()
     clean_ipython_hist()
     gc.collect()
     torch.cuda.empty_cache()
 
-# %% ../nbs/00_core.ipynb 97
+# %% ../nbs/00_core.ipynb 96
 def init_weights(m, leaky=0.):
     if isinstance(m, (nn.Conv1d, nn.Conv2d, nn.Conv3d, nn.Linear)): init.kaiming_normal_(m.weight, a=leaky)
 
-# %% ../nbs/00_core.ipynb 98
+# %% ../nbs/00_core.ipynb 97
 class GeneralRelu(nn.Module):
     def __init__(self, leak=None, sub=None, maxv=None):
         super().__init__()
