@@ -10,6 +10,7 @@ __all__ = ['def_device', 'Dataset', 'DataLoaders', 'get_dls', 'to_device', 'to_c
 # %% ../nbs/00_core.ipynb 3
 import math
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import numpy as np
 import sys, gc, traceback
 from collections.abc import Mapping
