@@ -16,7 +16,7 @@ from collections.abc import Mapping
 from operator import attrgetter
 from copy import copy
 from functools import partial
-from typing import Literal
+from typing import Literal, Optional
 
 import torch
 import torch.nn.functional as F
@@ -329,8 +329,8 @@ def get_grid(
 def show_images(
     ims:list, # Images to show
     nrows:int=1, # Number of rows in grid
-    ncols:int|None=None, # Number of columns in grid (auto-calculated if None)
-    titles:list|None=None, # Optional list of titles for each image
+    ncols:int=None, # Number of columns in grid (auto-calculated if None)
+    titles:list=None, # Optional list of titles for each image
     noframe:bool=True, # Hide axes, yes or no
     **kwargs):
     """Show all images `ims` as subplots with `nrows` using `titles`."""
