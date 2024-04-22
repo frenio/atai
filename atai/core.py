@@ -8,7 +8,8 @@ __all__ = ['def_device', 'Dataset', 'DataLoaders', 'get_dls', 'to_device', 'to_c
            'ActivationStats', 'clean_ipython_hist', 'clean_tb', 'clean_mem', 'init_weights', 'GeneralRelu']
 
 # %% ../nbs/00_core.ipynb 3
-import math, matplotlib.pyplot as plt
+import math
+import matplotlib.pyplot as plt
 import numpy as np
 import sys, gc, traceback
 from collections.abc import Mapping
