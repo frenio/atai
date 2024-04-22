@@ -195,6 +195,7 @@ class MetricsCB(Callback):
         log = {k:f"{v.compute():.3f}" for k, v in self.all_metrics.items()}
         log['epoch'] = learn.epoch
         log['train'] = 'train' if learn.model.training else 'eval'
+        log = {k: str(v) for k, v in log.items()}
         self._log(log)
     
     def after_batch(self, learn):
