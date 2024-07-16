@@ -5,7 +5,8 @@ __all__ = ['def_device', 'Dataset', 'DataLoaders', 'get_dls', 'to_device', 'to_c
            'CancelEpochException', 'Callback', 'with_cbs', 'run_cbs', 'Learner', 'TrainLearner', 'DeviceCB',
            'SingleBatchCB', 'TrainCB', 'MetricsCB', 'ProgressCB', 'LRFinderCB', 'lr_find', 'show_image', 'subplots',
            'get_grid', 'show_images', 'Hook', 'append_stats', 'Hooks', 'HooksCallback', 'get_hist', 'get_min',
-           'ActivationStats', 'clean_ipython_hist', 'clean_tb', 'clean_mem', 'init_weights', 'GeneralRelu']
+           'ActivationStats', 'clean_ipython_hist', 'clean_tb', 'clean_mem', 'init_weights', 'GeneralRelu', 'conv1d',
+           'ResBlock1d', 'Reshape', 'Head', 'FeedForward', 'MultiHeadAttention', 'Block', 'TransformerModel']
 
 # %% ../nbs/00_core.ipynb 3
 import math
@@ -467,3 +468,116 @@ class GeneralRelu(nn.Module):
         if self.sub is not None: x -= self.sub
         if self.maxv is not None: x.clamp_max_(self.maxv)
         return x
+
+# %% ../nbs/00_core.ipynb 104
+def conv1d(ni, nf, ks=3, stride=2, act=nn.ReLU, norm=None, bias=None):
+    if bias is None: bias = not isinstance(norm, (nn.BatchNorm1d,nn.BatchNorm2d,nn.BatchNorm3d))
+    layers = [nn.Conv1d(ni, nf, stride=stride, kernel_size=ks, padding=ks//2, bias=bias)]
+    if norm: layers.append(norm(nf))
+    if act: layers.append(act())
+    return nn.Sequential(*layers)
+
+def _conv1d_block(ni, nf, stride, act=nn.ReLU, norm=None, ks=3):
+    return nn.Sequential(conv1d(ni, nf, stride=1, act=act, norm=norm, ks=ks),
+                         conv1d(nf, nf, stride=stride, act=None, norm=norm, ks=ks))
+
+class ResBlock1d(nn.Module):
+    def __init__(self, ni, nf, stride=1, ks=3, act=nn.ReLU, norm=None):
+        super().__init__()
+        self.convs = _conv1d_block(ni, nf, stride=stride, ks=ks, act=act, norm=norm)
+        self.idconv = fc.noop if ni==nf else conv1d(ni, nf, stride=1, ks=1, act=None)
+        self.pool = fc.noop if stride==1 else nn.AvgPool1d(stride, ceil_mode=True)
+        self.act = act()
+
+    def forward(self, x): return self.act(self.convs(x) + self.pool(self.idconv(x)))
+
+# %% ../nbs/00_core.ipynb 106
+class Reshape(nn.Module):
+    def forward(self, x): 
+        B, L, C = x.shape
+        return x.view(B, C, L)
+
+# %% ../nbs/00_core.ipynb 116
+class Head(nn.Module):
+    """One head of self-attention."""
+    def __init__(self, head_size):
+        super().__init__()
+        self.key = nn.Linear(n_embd, head_size, bias=False)
+        self.query = nn.Linear(n_embd, head_size, bias=False)
+        self.value = nn.Linear(n_embd, head_size, bias=False)
+        #self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size))) # comment out if used in an encoder setting
+        self.dropout = nn.Dropout(dropout) # <-- dropout added here
+    def forward(self, x):
+        B, T, C = x.shape
+        k = self.key(x) # (B, T, head_size)
+        q = self.query(x) # (B, T, head_size)
+        # compute affinities
+        wei = q @ k.transpose(-2, -1) * C**(-0.5) # (B, T, head_size) @ (B, head_size, T) --> (B, T, T)
+        #wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) # comment out if used in an encoder setting
+        wei = F.softmax(wei, dim=-1) # (B, T, T)
+        wei = self.dropout(wei) # <-- dropout added here
+        v = self.value(x) # (B, T, head_size)
+        out = wei @ v # (B, T, T) @ (B, head_size, T) --> (B, T, head_size)
+        return out
+
+# %% ../nbs/00_core.ipynb 117
+class FeedForward(nn.Module):
+    """A simple linear layer followed by a non-linearity."""
+    def __init__(self, n_embed):
+        super().__init__()
+        self.net = nn.Sequential(nn.Linear(n_embd, 4 * n_embd), 
+                                 nn.ReLU(),
+                                 nn.Linear(4 * n_embd, n_embd),
+                                 nn.Dropout(dropout)) # <-- dropout added here
+    def forward(self, x): return self.net(x)
+
+# %% ../nbs/00_core.ipynb 118
+class MultiHeadAttention(nn.Module):
+    """Multiple heads of self-attention in parallel."""
+    def __init__(self, num_heads, head_size):
+        super().__init__()
+        self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
+        self.proj = nn.Linear(n_embd, n_embd)
+        self.dropout = nn.Dropout(dropout) # <-- dropout added here
+    def forward(self, x): 
+        out = torch.cat([h(x) for h in self.heads], dim=-1)
+        out = self.dropout(self.proj(out)) # <-- dropout added here
+        return out
+
+# %% ../nbs/00_core.ipynb 119
+class Block(nn.Module):
+    """Transformer block: communication (attention) followed by computation."""
+    def __init__(self, n_embd, n_head):
+        super().__init__()
+        head_size = n_embd // n_head
+        self.sa = MultiHeadAttention(n_head, head_size)
+        self.ffwd = FeedForward(n_embd)
+        self.ln1 = nn.LayerNorm(n_embd)
+        self.ln2 = nn.LayerNorm(n_embd)
+    def forward(self, x):
+        x = x + self.sa(self.ln1(x))
+        x = x + self.ffwd(self.ln2(x))
+        return x
+
+# %% ../nbs/00_core.ipynb 120
+class TransformerModel(nn.Module):
+    def __init__(self, device):
+        super().__init__()
+        self.device = device
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd, padding_idx=0)
+        self.position_embedding_table = nn.Embedding(block_size, n_embd)
+        self.blocks = nn.Sequential(*[Block(n_embd, n_head=n_head) for _ in range(n_layer)])
+        self.lnf = nn.LayerNorm(n_embd) # final layer norm
+        self.lm_head = nn.Linear(n_embd * block_size, 1) # changed vocab_size to 1 for binary classification
+        self.flat = nn.Flatten(0, -1)
+    def forward(self, idx):
+        B, T = idx.shape
+        tok_emb = self.token_embedding_table(idx) # (B, T, C) (Batch, Time, Channel)
+        pos_emb = self.position_embedding_table(torch.arange(T, device=self.device)) # (T, C)
+        x = tok_emb + pos_emb # (B, T, C)
+        x = self.blocks(x) # (B, T, C)
+        x = self.lnf(x) # (B, T, C)
+        B, T, C = x.shape
+        x = x.view(B, T * C)
+        logits = self.lm_head(x) # (B, 1)
+        return self.flat(logits)
