@@ -3,10 +3,11 @@
 # %% auto 0
 __all__ = ['def_device', 'Dataset', 'DataLoaders', 'get_dls', 'to_device', 'to_cpu', 'CancelFitException', 'CancelBatchException',
            'CancelEpochException', 'Callback', 'with_cbs', 'run_cbs', 'Learner', 'TrainLearner', 'DeviceCB',
-           'SingleBatchCB', 'TrainCB', 'MetricsCB', 'ProgressCB', 'LRFinderCB', 'lr_find', 'show_image', 'subplots',
-           'get_grid', 'show_images', 'Hook', 'append_stats', 'Hooks', 'HooksCallback', 'get_hist', 'get_min',
-           'ActivationStats', 'clean_ipython_hist', 'clean_tb', 'clean_mem', 'init_weights', 'GeneralRelu', 'conv1d',
-           'ResBlock1d', 'Reshape', 'Head', 'FeedForward', 'MultiHeadAttention', 'Block', 'TransformerModel']
+           'SingleBatchCB', 'TrainCB', 'BaseSchedCB', 'BatchSchedCB', 'EpochSchedCB', 'RecorderCB', 'MetricsCB',
+           'ProgressCB', 'LRFinderCB', 'lr_find', 'show_image', 'subplots', 'get_grid', 'show_images', 'Hook',
+           'append_stats', 'Hooks', 'HooksCallback', 'get_hist', 'get_min', 'ActivationStats', 'clean_ipython_hist',
+           'clean_tb', 'clean_mem', 'init_weights', 'GeneralRelu', 'conv1d', 'ResBlock1d', 'Reshape', 'Head',
+           'FeedForward', 'MultiHeadAttention', 'Block', 'TransformerModel']
 
 # %% ../nbs/00_core.ipynb 3
 import math
@@ -183,6 +184,43 @@ class TrainCB(Callback):
     def zero_grad(self, learn): learn.opt.zero_grad()
 
 # %% ../nbs/00_core.ipynb 73
+class BaseSchedCB(Callback):
+    def __init__(self, sched=None):
+        self.sched = sched
+    def before_fit(self, learn): 
+        if self.sched == None:
+            self.sched = partial(torch.optim.lr_scheduler.OneCycleLR, max_lr=lr, total_steps=learn.n_epochs*len(learn.dls.train))
+        self.schedobj = self.sched(learn.opt)
+    def step(self, learn):
+        if learn.training: self.schedobj.step()
+
+class BatchSchedCB(BaseSchedCB):
+    def after_batch(self, learn): self.step(learn)
+        
+class EpochSchedCB(BaseSchedCB):
+    def after_epoch(self, learn): self.step(learn)
+        
+class RecorderCB(Callback):
+    def __init__(self, **d): self.d = d
+    def before_fit(self, learn):
+        self.recs = {k:[] for k in self.d}
+        self.pg = learn.opt.param_groups[0]
+    def after_batch(self, learn):
+        if not learn.training: return
+        for k, v in self.d.items():
+            self.recs[k].append(v(self))
+    def plot(self):
+        for k, v in self.recs.items():
+            plt.figure(figsize=(5, 3))
+            plt.plot(v, label=k)
+            plt.legend()
+            plt.show()
+            
+def _lr(cb): return cb.pg['lr']
+def _beta1(cb): return cb.pg['betas'][0]
+def _beta2(cb): return cb.pg['betas'][1]
+
+# %% ../nbs/00_core.ipynb 75
 class MetricsCB(Callback):
     def __init__(self, *ms, **metrics):
         for o in ms: metrics[type(o).__name__] = o
@@ -205,7 +243,7 @@ class MetricsCB(Callback):
         for m in self.metrics.values(): m.update(to_cpu(learn.preds), y)
         self.loss.update(to_cpu(learn.loss), weight=len(x))
 
-# %% ../nbs/00_core.ipynb 74
+# %% ../nbs/00_core.ipynb 76
 class ProgressCB(Callback):
     order = MetricsCB.order+1
     def __init__(self, plot=False): self.plot = plot
@@ -235,7 +273,7 @@ class ProgressCB(Callback):
                 self.val_losses.append(learn.metrics.all_metrics['loss'].compute())
                 self.mbar.update_graph([[fc.L.range(self.losses), self.losses],[fc.L.range(learn.epoch+1).map(lambda x: (x+1)*len(learn.dls.train)), self.val_losses]])
 
-# %% ../nbs/00_core.ipynb 76
+# %% ../nbs/00_core.ipynb 78
 class LRFinderCB(Callback):
     def __init__(self, gamma=1.3, max_mult=3, av_over=1): fc.store_attr()
     
@@ -268,12 +306,12 @@ class LRFinderCB(Callback):
         plt.ylabel('loss')
         plt.xscale('log')
 
-# %% ../nbs/00_core.ipynb 77
+# %% ../nbs/00_core.ipynb 79
 @fc.patch
 def lr_find(self:Learner, gamma=1.3, max_mult=3, start_lr=1e-5, max_epochs=10, av_over=1):
     self.fit(max_epochs, lr=start_lr, cbs=LRFinderCB(gamma=gamma, max_mult=max_mult, av_over=av_over))
 
-# %% ../nbs/00_core.ipynb 79
+# %% ../nbs/00_core.ipynb 81
 @fc.delegates(plt.Axes.imshow)
 def show_image(im, ax=None, figsize=None, title=None, noframe=True, **kwargs):
     "Show a PIL or PyTorch image on `ax`."
@@ -290,7 +328,7 @@ def show_image(im, ax=None, figsize=None, title=None, noframe=True, **kwargs):
     if noframe: ax.axis('off')
     return ax
 
-# %% ../nbs/00_core.ipynb 80
+# %% ../nbs/00_core.ipynb 82
 @fc.delegates(plt.subplots, keep=True)
 def subplots(
     nrows=1, # Number of rows in returned axes grid
@@ -306,7 +344,7 @@ def subplots(
     if nrows*ncols==1: a = array([ax])
     return fig, ax
 
-# %% ../nbs/00_core.ipynb 81
+# %% ../nbs/00_core.ipynb 83
 @fc.delegates(subplots)
 def get_grid(
     n, # Number of axes
@@ -327,7 +365,7 @@ def get_grid(
     if title is not None: fig.suptitle(title, weight=weight, size=size)
     return fig, axs
 
-# %% ../nbs/00_core.ipynb 82
+# %% ../nbs/00_core.ipynb 84
 @fc.delegates(subplots)
 def show_images(
     ims:list, # Images to show
@@ -340,7 +378,7 @@ def show_images(
     axs = get_grid(len(ims), **kwargs)[1].flat
     for im, t, ax in zip_longest(ims, titles or [], axs): show_image(im, ax=ax, title=t, noframe=noframe)
 
-# %% ../nbs/00_core.ipynb 84
+# %% ../nbs/00_core.ipynb 86
 class Hook():
     def __init__(self, m, f): self.hook = m.register_forward_hook(partial(f, self))
     def remove(self): self.hook.remove()
@@ -352,7 +390,7 @@ def append_stats(hook, mod, inp, outp):
     hook.stats[0].append(acts.mean())
     hook.stats[1].append(acts.std())
 
-# %% ../nbs/00_core.ipynb 85
+# %% ../nbs/00_core.ipynb 87
 class Hooks(list):
     def __init__(self, ms, f): super().__init__([Hook(m, f) for m in ms])
     def __enter__(self, *args): return self
@@ -364,7 +402,7 @@ class Hooks(list):
     def remove(self):
         for h in self: h.remove()
 
-# %% ../nbs/00_core.ipynb 86
+# %% ../nbs/00_core.ipynb 88
 class HooksCallback(Callback):
     def __init__(self, hookfunc, mod_filter=fc.noop, on_train=True, on_valid=False, mods=None):
         fc.store_attr()
@@ -382,7 +420,7 @@ class HooksCallback(Callback):
     def __iter__(self): return iter(self.hooks)
     def __len__(self): return len(self.hooks)
 
-# %% ../nbs/00_core.ipynb 87
+# %% ../nbs/00_core.ipynb 89
 def append_stats(hook, mod, inp, outp):
     if not hasattr(hook, 'stats'): hook.stats = ([], [], [])
     acts = to_cpu(outp)
@@ -390,16 +428,16 @@ def append_stats(hook, mod, inp, outp):
     hook.stats[1].append(acts.std())
     hook.stats[2].append(acts.abs().histc(40, 0, 10))
 
-# %% ../nbs/00_core.ipynb 88
+# %% ../nbs/00_core.ipynb 90
 # Thanks to @ste for the initial version of the histogram plotting code
 def get_hist(h): return torch.stack(h.stats[2]).t().float().log1p()
 
-# %% ../nbs/00_core.ipynb 89
+# %% ../nbs/00_core.ipynb 91
 def get_min(h):
     h1 = torch.stack(h.stats[2]).t().float()
     return h1[:2].sum(0)/h1.sum(0)
 
-# %% ../nbs/00_core.ipynb 90
+# %% ../nbs/00_core.ipynb 92
 class ActivationStats(HooksCallback):
     def __init__(self, mod_filter=fc.noop): super().__init__(append_stats, mod_filter)
 
@@ -422,7 +460,7 @@ class ActivationStats(HooksCallback):
         axs[1].set_title('Stdevs')
         plt.legend(fc.L.range(self))
 
-# %% ../nbs/00_core.ipynb 92
+# %% ../nbs/00_core.ipynb 94
 def clean_ipython_hist():
     # Code in this function mainly copied from IPython source
     if not 'get_ipython' in globals(): return
@@ -437,7 +475,7 @@ def clean_ipython_hist():
     hm.input_hist_raw[:] = [''] * pc
     hm._i = hm._ii = hm._iii = hm._i00 =  ''
 
-# %% ../nbs/00_core.ipynb 93
+# %% ../nbs/00_core.ipynb 95
 def clean_tb():
     # h/t Piotr Czapla
     if hasattr(sys, 'last_traceback'):
@@ -446,18 +484,18 @@ def clean_tb():
     if hasattr(sys, 'last_type'): delattr(sys, 'last_type')
     if hasattr(sys, 'last_value'): delattr(sys, 'last_value')
 
-# %% ../nbs/00_core.ipynb 94
+# %% ../nbs/00_core.ipynb 96
 def clean_mem():
     clean_tb()
     clean_ipython_hist()
     gc.collect()
     torch.cuda.empty_cache()
 
-# %% ../nbs/00_core.ipynb 96
+# %% ../nbs/00_core.ipynb 98
 def init_weights(m, leaky=0.):
     if isinstance(m, (nn.Conv1d, nn.Conv2d, nn.Conv3d, nn.Linear)): init.kaiming_normal_(m.weight, a=leaky)
 
-# %% ../nbs/00_core.ipynb 97
+# %% ../nbs/00_core.ipynb 99
 class GeneralRelu(nn.Module):
     def __init__(self, leak=None, sub=None, maxv=None):
         super().__init__()
@@ -469,7 +507,7 @@ class GeneralRelu(nn.Module):
         if self.maxv is not None: x.clamp_max_(self.maxv)
         return x
 
-# %% ../nbs/00_core.ipynb 104
+# %% ../nbs/00_core.ipynb 106
 def conv1d(ni, nf, ks=3, stride=2, act=nn.ReLU, norm=None, bias=None):
     if bias is None: bias = not isinstance(norm, (nn.BatchNorm1d,nn.BatchNorm2d,nn.BatchNorm3d))
     layers = [nn.Conv1d(ni, nf, stride=stride, kernel_size=ks, padding=ks//2, bias=bias)]
@@ -491,13 +529,13 @@ class ResBlock1d(nn.Module):
 
     def forward(self, x): return self.act(self.convs(x) + self.pool(self.idconv(x)))
 
-# %% ../nbs/00_core.ipynb 106
+# %% ../nbs/00_core.ipynb 108
 class Reshape(nn.Module):
     def forward(self, x): 
         B, L, C = x.shape
         return x.view(B, C, L)
 
-# %% ../nbs/00_core.ipynb 116
+# %% ../nbs/00_core.ipynb 117
 class Head(nn.Module):
     """One head of self-attention."""
     def __init__(self, head_size):
@@ -520,7 +558,7 @@ class Head(nn.Module):
         out = wei @ v # (B, T, T) @ (B, head_size, T) --> (B, T, head_size)
         return out
 
-# %% ../nbs/00_core.ipynb 117
+# %% ../nbs/00_core.ipynb 118
 class FeedForward(nn.Module):
     """A simple linear layer followed by a non-linearity."""
     def __init__(self, n_embed):
@@ -531,7 +569,7 @@ class FeedForward(nn.Module):
                                  nn.Dropout(dropout)) # <-- dropout added here
     def forward(self, x): return self.net(x)
 
-# %% ../nbs/00_core.ipynb 118
+# %% ../nbs/00_core.ipynb 119
 class MultiHeadAttention(nn.Module):
     """Multiple heads of self-attention in parallel."""
     def __init__(self, num_heads, head_size):
@@ -544,7 +582,7 @@ class MultiHeadAttention(nn.Module):
         out = self.dropout(self.proj(out)) # <-- dropout added here
         return out
 
-# %% ../nbs/00_core.ipynb 119
+# %% ../nbs/00_core.ipynb 120
 class Block(nn.Module):
     """Transformer block: communication (attention) followed by computation."""
     def __init__(self, n_embd, n_head):
@@ -559,7 +597,7 @@ class Block(nn.Module):
         x = x + self.ffwd(self.ln2(x))
         return x
 
-# %% ../nbs/00_core.ipynb 120
+# %% ../nbs/00_core.ipynb 121
 class TransformerModel(nn.Module):
     def __init__(self, device):
         super().__init__()
