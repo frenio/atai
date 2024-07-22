@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.55">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The core package contains all functions, variables, and classes needed to train a deep neural network model and inspect its activations.">
+
+<title>core – atai</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="core – atai">
+<meta property="og:description" content="The core package contains all functions, variables, and classes needed to train a deep neural network model and inspect its activations.">
+<meta property="og:site_name" content="atai">
+<meta name="twitter:title" content="core – atai">
+<meta name="twitter:description" content="The core package contains all functions, variables, and classes needed to train a deep neural network model and inspect its activations.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">atai</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./core.html">core</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">atai</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">core</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-protein-solubility-data" id="toc-load-protein-solubility-data" class="nav-link active" data-scroll-target="#load-protein-solubility-data">Load Protein Solubility Data</a></li>
+  <li><a href="#dataset-and-dataloaders" id="toc-dataset-and-dataloaders" class="nav-link" data-scroll-target="#dataset-and-dataloaders">Dataset and DataLoaders</a>
+  <ul class="collapse">
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a></li>
+  <li><a href="#dataloaders" id="toc-dataloaders" class="nav-link" data-scroll-target="#dataloaders">DataLoaders</a></li>
+  <li><a href="#get_dls" id="toc-get_dls" class="nav-link" data-scroll-target="#get_dls">get_dls</a></li>
+  </ul></li>
+  <li><a href="#learner-framework-and-callbacks" id="toc-learner-framework-and-callbacks" class="nav-link" data-scroll-target="#learner-framework-and-callbacks">Learner Framework and Callbacks</a>
+  <ul class="collapse">
+  <li><a href="#to_device" id="toc-to_device" class="nav-link" data-scroll-target="#to_device">to_device</a></li>
+  <li><a href="#to_cpu" id="toc-to_cpu" class="nav-link" data-scroll-target="#to_cpu">to_cpu</a></li>
+  <li><a href="#cancelepochexception" id="toc-cancelepochexception" class="nav-link" data-scroll-target="#cancelepochexception">CancelEpochException</a></li>
+  <li><a href="#cancelbatchexception" id="toc-cancelbatchexception" class="nav-link" data-scroll-target="#cancelbatchexception">CancelBatchException</a></li>
+  <li><a href="#cancelfitexception" id="toc-cancelfitexception" class="nav-link" data-scroll-target="#cancelfitexception">CancelFitException</a></li>
+  <li><a href="#callback" id="toc-callback" class="nav-link" data-scroll-target="#callback">Callback</a></li>
+  <li><a href="#with_cbs" id="toc-with_cbs" class="nav-link" data-scroll-target="#with_cbs">with_cbs</a></li>
+  <li><a href="#run_cbs" id="toc-run_cbs" class="nav-link" data-scroll-target="#run_cbs">run_cbs</a></li>
+  <li><a href="#learner" id="toc-learner" class="nav-link" data-scroll-target="#learner">Learner</a></li>
+  <li><a href="#trainlearner" id="toc-trainlearner" class="nav-link" data-scroll-target="#trainlearner">TrainLearner</a></li>
+  <li><a href="#devicecb" id="toc-devicecb" class="nav-link" data-scroll-target="#devicecb">DeviceCB</a></li>
+  <li><a href="#singlebatchcb" id="toc-singlebatchcb" class="nav-link" data-scroll-target="#singlebatchcb">SingleBatchCB</a></li>
+  <li><a href="#traincb" id="toc-traincb" class="nav-link" data-scroll-target="#traincb">TrainCB</a></li>
+  <li><a href="#recordercb" id="toc-recordercb" class="nav-link" data-scroll-target="#recordercb">RecorderCB</a></li>
+  <li><a href="#epochschedcb" id="toc-epochschedcb" class="nav-link" data-scroll-target="#epochschedcb">EpochSchedCB</a></li>
+  <li><a href="#batchschedcb" id="toc-batchschedcb" class="nav-link" data-scroll-target="#batchschedcb">BatchSchedCB</a></li>
+  <li><a href="#baseschedcb" id="toc-baseschedcb" class="nav-link" data-scroll-target="#baseschedcb">BaseSchedCB</a></li>
+  <li><a href="#metricscb" id="toc-metricscb" class="nav-link" data-scroll-target="#metricscb">MetricsCB</a></li>
+  <li><a href="#progresscb" id="toc-progresscb" class="nav-link" data-scroll-target="#progresscb">ProgressCB</a></li>
+  <li><a href="#lrfindercb" id="toc-lrfindercb" class="nav-link" data-scroll-target="#lrfindercb">LRFinderCB</a></li>
+  <li><a href="#show_doc" id="toc-show_doc" class="nav-link" data-scroll-target="#show_doc">show_doc</a></li>
+  </ul></li>
+  <li><a href="#functions-for-convenient-plotting-of-images" id="toc-functions-for-convenient-plotting-of-images" class="nav-link" data-scroll-target="#functions-for-convenient-plotting-of-images">Functions for Convenient Plotting of Images</a>
+  <ul class="collapse">
+  <li><a href="#show_image" id="toc-show_image" class="nav-link" data-scroll-target="#show_image">show_image</a></li>
+  <li><a href="#subplots" id="toc-subplots" class="nav-link" data-scroll-target="#subplots">subplots</a></li>
+  <li><a href="#get_grid" id="toc-get_grid" class="nav-link" data-scroll-target="#get_grid">get_grid</a></li>
+  <li><a href="#show_images" id="toc-show_images" class="nav-link" data-scroll-target="#show_images">show_images</a></li>
+  </ul></li>
+  <li><a href="#activation-statistics-using-hooks" id="toc-activation-statistics-using-hooks" class="nav-link" data-scroll-target="#activation-statistics-using-hooks">Activation Statistics using Hooks</a>
+  <ul class="collapse">
+  <li><a href="#append_stats" id="toc-append_stats" class="nav-link" data-scroll-target="#append_stats">append_stats</a></li>
+  <li><a href="#hook" id="toc-hook" class="nav-link" data-scroll-target="#hook">Hook</a></li>
+  <li><a href="#hooks" id="toc-hooks" class="nav-link" data-scroll-target="#hooks">Hooks</a></li>
+  <li><a href="#hookscallback" id="toc-hookscallback" class="nav-link" data-scroll-target="#hookscallback">HooksCallback</a></li>
+  <li><a href="#append_stats-1" id="toc-append_stats-1" class="nav-link" data-scroll-target="#append_stats-1">append_stats</a></li>
+  <li><a href="#get_hist" id="toc-get_hist" class="nav-link" data-scroll-target="#get_hist">get_hist</a></li>
+  <li><a href="#get_min" id="toc-get_min" class="nav-link" data-scroll-target="#get_min">get_min</a></li>
+  <li><a href="#activationstats" id="toc-activationstats" class="nav-link" data-scroll-target="#activationstats">ActivationStats</a></li>
+  </ul></li>
+  <li><a href="#functions-for-convenient-memory-management" id="toc-functions-for-convenient-memory-management" class="nav-link" data-scroll-target="#functions-for-convenient-memory-management">Functions for Convenient Memory Management</a>
+  <ul class="collapse">
+  <li><a href="#clean_ipython_hist" id="toc-clean_ipython_hist" class="nav-link" data-scroll-target="#clean_ipython_hist">clean_ipython_hist</a></li>
+  <li><a href="#clean_tb" id="toc-clean_tb" class="nav-link" data-scroll-target="#clean_tb">clean_tb</a></li>
+  <li><a href="#clean_mem" id="toc-clean_mem" class="nav-link" data-scroll-target="#clean_mem">clean_mem</a></li>
+  </ul></li>
+  <li><a href="#weight-initialization-and-general-relu" id="toc-weight-initialization-and-general-relu" class="nav-link" data-scroll-target="#weight-initialization-and-general-relu">Weight Initialization and General Relu</a>
+  <ul class="collapse">
+  <li><a href="#init_weights" id="toc-init_weights" class="nav-link" data-scroll-target="#init_weights">init_weights</a></li>
+  <li><a href="#generalrelu" id="toc-generalrelu" class="nav-link" data-scroll-target="#generalrelu">GeneralRelu</a></li>
+  </ul></li>
+  <li><a href="#training-a-model" id="toc-training-a-model" class="nav-link" data-scroll-target="#training-a-model">Training a Model</a>
+  <ul class="collapse">
+  <li><a href="#tiny-resnet" id="toc-tiny-resnet" class="nav-link" data-scroll-target="#tiny-resnet">Tiny Resnet</a></li>
+  <li><a href="#resblock1d" id="toc-resblock1d" class="nav-link" data-scroll-target="#resblock1d">ResBlock1d</a></li>
+  <li><a href="#conv1d" id="toc-conv1d" class="nav-link" data-scroll-target="#conv1d">conv1d</a></li>
+  <li><a href="#reshape" id="toc-reshape" class="nav-link" data-scroll-target="#reshape">Reshape</a></li>
+  </ul></li>
+  <li><a href="#transformer-model-with-skip-connections-and-layernorm" id="toc-transformer-model-with-skip-connections-and-layernorm" class="nav-link" data-scroll-target="#transformer-model-with-skip-connections-and-layernorm">Transformer Model with Skip Connections and LayerNorm</a>
+  <ul class="collapse">
+  <li><a href="#head" id="toc-head" class="nav-link" data-scroll-target="#head">Head</a></li>
+  <li><a href="#feedforward" id="toc-feedforward" class="nav-link" data-scroll-target="#feedforward">FeedForward</a></li>
+  <li><a href="#multiheadattention" id="toc-multiheadattention" class="nav-link" data-scroll-target="#multiheadattention">MultiHeadAttention</a></li>
+  <li><a href="#block" id="toc-block" class="nav-link" data-scroll-target="#block">Block</a></li>
+  <li><a href="#transformermodel" id="toc-transformermodel" class="nav-link" data-scroll-target="#transformermodel">TransformerModel</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/frenio/atai/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">core</h1>
+</div>
+
+<div>
+  <div class="description">
+    The core package contains all functions, variables, and classes needed to train a deep neural network model and inspect its activations.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="load-protein-solubility-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-protein-solubility-data">Load Protein Solubility Data</h2>
+<p>The example dataset is from the <a href="https://doi.org/10.1093/bioinformatics/bty166">DeepSol</a> paper by Khurana <em>et al.</em> and was obtained at <a href="https://zenodo.org/records/1162886">https://zenodo.org/records/1162886</a>.</p>
+<div id="cell-4" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>train_sqs <span class="op">=</span> <span class="bu">open</span>(<span class="st">'sol_data/train_src'</span>, <span class="st">'r'</span>).read().splitlines()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>train_tgs <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(<span class="bu">int</span>, <span class="bu">open</span>(<span class="st">'sol_data/train_tgt'</span>, <span class="st">'r'</span>).read().splitlines()))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train_sqs[:<span class="dv">2</span>], train_tgs[:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(['GMILKTNLFGHTYQFKSITDVLAKANEEKSGDRLAGVAAESAEERVAAKVVLSKMTLGDLRNNPVVPYETDEVTRIIQDQVNDRIHDSIKNWTVEELREWILDHKTTDADIKRVARGLTSEIIAAVTKLMSNLDLIYGAKKIRVIAHANTTIGLPGTFSARLQPNHPTDDPDGILASLMEGLTYGIGDAVIGLNPVDDSTDSVVRLLNKFEEFRSKWDVPTQTCVLAHVKTQMEAMRRGAPTGLVFQSIAGSEKGNTAFGFDGATIEEARQLALQSGAATGPNVMYFETGQGSELSSDAHFGVDQVTMEARCYGFAKKFDPFLVNTVVGFIGPEYLYDSKQVIRAGLEDHFMGKLTGISMGCDVCYTNHMKADQNDVENLSVLLTAAGCNFIMGIPHGDDVMLNYQTTGYHETATLRELFGLKPIKEFDQWMEKMGFSENGKLTSRAGDASIFLK',
+  'MAHHHHHHMSFFRMKRRLNFVVKRGIEELWENSFLDNNVDMKKIEYSKTGDAWPCVLLRKKSFEDLHKLYYICLKEKNKLLGEQYFHLQNSTKMLQHGRLKKVKLTMKRILTVLSRRAIHDQCLRAKDMLKKQEEREFYEIQKFKLNEQLLCLKHKMNILKKYNSFSLEQISLTFSIKKIENKIQQIDIILNPLRKETMYLLIPHFKYQRKYSDLPGFISWKKQNIIALRNNMSKLHRLY'],
+ [1, 0])</code></pre>
+</div>
+</div>
+<div id="cell-5" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>valid_sqs <span class="op">=</span> <span class="bu">open</span>(<span class="st">'sol_data/val_src'</span>, <span class="st">'r'</span>).read().splitlines()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>valid_tgs <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(<span class="bu">int</span>, <span class="bu">open</span>(<span class="st">'sol_data/val_tgt'</span>, <span class="st">'r'</span>).read().splitlines()))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>valid_sqs[:<span class="dv">2</span>], valid_tgs[:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(['SRLYRHNLMEDVFNMENESFMQETRLMENEYSVNLPTRFYYKKRWNNGFVNIVNIFRACMVIGTPGSGKSYAIVNSYIRQLIAKGFAIYIYDYKFDDLSTIAYNSLLKNMDKYEVKPRFYVINFDDPRRSHRCNPINPEFMTDISDAYEASYTIMLNLNRTWIEKQGDFFVESPIILLAAIIWYLKIYKNGIYCTFPHAVELLNKPYSDLFTILTSYPELENYLSPFMDAWKGNAQDQLQGQIASAKIPLTRMISPQLYWVMTGNDFSLDINNPKEPKLLCVGNNPDRQNIYSAALGLYNSRIVKLINKKKQLKCAVIIDELPTIYFRGLDNLIATARSNKVGVLLGFQDFSQLTRDYGEKESKVIQNTVGNIFSGQVVGETAKTLSERFGKVLQQRQSVSINRQDVSTSINTQLDSLIPASKIANLSQGTFVGAVADNFDERIEQKIFHAEIVVDHTKISAEEKAYQKIPVINDFKDRNGNDIMMQQIQRNYDQIKADAQAIINEEMRRIKNDPELRKRLGLEDEKGKDPDKS',
+  'ATTYNAVVSKSSSDGKTFKTIADAIASAPAGSTPFVILIKNGVYNERLTITRNNLHLKGESRNGAVIAAATAAGTLKSDGSKWGTAGSSTITISAKDFSAQSLTIRNDFDFPANQAKSDSDSSKIKDTQAVALYVTKSGDRAYFKDVSLVGYQATLYVSGGRSFFSDCRISGTVDFIFGDGTALFNNCDLVSRYRADVKSGNVSGYLTAPSTNINQKYGLVITNSRVIRESDSVPAKSYGLGRPWHPTTTFSDGRYADPNAIGQTVFLNTSMDNHIYGWDKMSGKDKNGNTIWFNPEDSRFFEYKSYGAGATVSKDRRQLTDAQAAEYTQSKVLGDWTPTLP'],
+ [0, 1])</code></pre>
+</div>
+</div>
+<div id="cell-6" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>test_sqs <span class="op">=</span> <span class="bu">open</span>(<span class="st">'sol_data/test_src'</span>, <span class="st">'r'</span>).read().splitlines()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>test_tgs <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(<span class="bu">int</span>, <span class="bu">open</span>(<span class="st">'sol_data/test_tgt'</span>, <span class="st">'r'</span>).read().splitlines()))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>test_sqs[:<span class="dv">2</span>], test_tgs[:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(['MLSVRIAAAVARALPRRAGLVSKNALGSSFVGTRNLHASNTRLQKTGTAEMSSILEERILGADTSVDLEETGRVLSIGDGIARVHGLRNVQAEEMVEFSSGLKGMSLNLEPDNVGVVVFGNDKLIKEGDIVKRTGAIVDVPVGDELLGRVVDALGNAIDGKGPVGSKIRRRVGLKAPGIIPRISVREPMQTGIKAVDSLVPIGRGQRELIIGDRQTGKTSIAIDTIINQKRFNDGTDEKKKLYCIYVAIGQKRSTVAQLVKRLTDADAMKYTIVVSATASDAAPLQYLAPYSGCSMGEYFRDNGKHALIIYDDLSKQAVAYRQMSLLLRRPPGREAYPGDVFYLHSRLLERAAKMNDSFGGGSLTALPVIETQAGDVSAYIPTNVISITDGQIFLETELFYKGIRPAINVGLSVSRVGSAAQTRAMKQVAGTMKLELAQYREVAAFAQFGSDLDAATQQLLSRGVRLTELLKQGQYSPMAIEEQVAVIYAGVRGYLDKLEPSKITKFESAFLSHVVSQHQSLLGNIRSDGKISEQSDAKLKEIVTNFLAGFEP',
+  'MDHMISENGETSAEGSICGYDSLHQLLSANLKPELYQEVNRLLLGRNCGRSLEQIVLPESAKALSSKHDFDLQAASFSADKEQMRNPRVVRVGLIQNSIALPTTAPFSDQTRGIFDKLKPIIDAAGVAGVNILCLQEAWTMPFAFCTRERRWCEFAEPVDGESTKFLQELAKKYNMVIVSPILERDIDHGEVLWNTAVIIGNNGNIIGKHRKNHIPRVGDFNESTYYMEGDTGHPVFETVFGKIAVNICYGRHHPLNWLAFGLNGAEIVFNPSATVGELSEPMWPIEARNAAIANSYFVGSINRVGTEVFPNPFTSGDGKPQHNDFGHFYGSSHFSAPDASCTPSLSRYKDGLLISDMDLNLCRQYKDKWGFRMTARYEVYADLLAKYIKPDFKPQVVSDPLLHKNST'],
+ [1, 1])</code></pre>
+</div>
+</div>
+<div id="cell-7" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(train_sqs), <span class="bu">len</span>(train_tgs), <span class="bu">len</span>(valid_sqs), <span class="bu">len</span>(valid_tgs), <span class="bu">len</span>(test_sqs), <span class="bu">len</span>(test_tgs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(62478, 62478, 6942, 6942, 1999, 1999)</code></pre>
+</div>
+</div>
+<p>Create a sorted list of amino acid sequences <code>aas</code> including an empty string for padding and determine the size of the vocabulary.</p>
+<div id="cell-9" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>aas <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(<span class="bu">set</span>(<span class="st">""</span>.join(train_sqs))) <span class="op">+</span> [<span class="st">""</span>])</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>vocab_size <span class="op">=</span> <span class="bu">len</span>(aas)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>aas, vocab_size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(['',
+  'A',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'K',
+  'L',
+  'M',
+  'N',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'V',
+  'W',
+  'Y'],
+ 21)</code></pre>
+</div>
+</div>
+<p>Create dictionaries that translate between string and integer representations of amino acids and define the corresponding <code>encode</code> and <code>decode</code> functions.</p>
+<div id="cell-11" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>str2int <span class="op">=</span> {aa:i <span class="cf">for</span> i, aa <span class="kw">in</span> <span class="bu">enumerate</span>(aas)}</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>int2str <span class="op">=</span> {i:aa <span class="cf">for</span> i, aa <span class="kw">in</span> <span class="bu">enumerate</span>(aas)}</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>encode <span class="op">=</span> <span class="kw">lambda</span> s: [str2int[aa] <span class="cf">for</span> aa <span class="kw">in</span> s]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>decode <span class="op">=</span> <span class="kw">lambda</span> l: <span class="st">''</span>.join([int2str[i] <span class="cf">for</span> i <span class="kw">in</span> l])</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(encode(<span class="st">"AYWCCCGGGHH"</span>))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(decode(encode(<span class="st">"AYWCCCGGGHH"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1, 20, 19, 2, 2, 2, 6, 6, 6, 7, 7]
+AYWCCCGGGHH</code></pre>
+</div>
+</div>
+<p>Figure out what the lengths of amino acid sequences in the dataset are and inspect the longest sequence.</p>
+<div id="cell-13" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>train_lens <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(<span class="bu">len</span>, train_sqs))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">max</span>(train_lens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>1691</code></pre>
+</div>
+</div>
+<div id="cell-14" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>longest <span class="op">=</span> train_sqs[np.argmax(train_lens)]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>longest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'MSGEVRLRQLEQFILDGPAQTNGQCFSVETLLDILICLYDECNNSPLRREKNILEYLEWAKPFTSKVKQMRLHREDFEILKVIGRGAFGEVAVVKLKNADKVFAMKILNKWEMLKRAETACFREERDVLVNGDNKWITTLHYAFQDDNNLYLVMDYYVGGDLLTLLSKFEDRLPEDMARFYLAEMVIAIDSVHQLHYVHRDIKPDNILMDMNGHIRLADFGSCLKLMEDGTVQSSVAVGTPDYISPEILQAMEDGKGRYGPECDWWSLGVCMYEMLYGETPFYAESLVETYGKIMNHKERFQFPAQVTDVSENAKDLIRRLICSREHRLGQNGIEDFKKHPFFSGIDWDNIRNCEAPYIPEVSSPTDTSNFDVDDDCLKNSETMPPPTHTAFSGHHLPFVGFTYTSSCVLSDRSCLRVTAGPTSLDLDVNVQRTLDNNLATEAYERRIKRLEQEKLELSRKLQESTQTVQALQYSTVDGPLTASKDLEIKNLKEEIEKLRKQVTESSHLEQQLEEANAVRQELDDAFRQIKAYEKQIKTLQQEREDLNKELVQASERLKNQSKELKDAHCQRKLAMQEFMEINERLTELHTQKQKLARHVRDKEEEVDLVMQKVESLRQELRRTERAKKELEVHTEALAAEASKDRKLREQSEHYSKQLENELEGLKQKQISYSPGVCSIEHQQEITKLKTDLEKKSIFYEEELSKREGIHANEIKNLKKELHDSEGQQLALNKEIMILKDKLEKTRRESQSEREEFESEFKQQYEREKVLLTEENKKLTSELDKLTTLYENLSIHNQQLEEEVKDLADKKESVAHWEAQITEIIQWVSDEKDARGYLQALASKMTEELEALRNSSLGTRATDMPWKMRRFAKLDMSARLELQSALDAEIRAKQAIQEELNKVKASNIITECKLKDSEKKNLELLSEIEQLIKDTEELRSEKGIEHQDSQHSFLAFLNTPTDALDQFERKTHQFFVKSFTTPTKCHQCTSLMVGLIRQGCSCEVCGFSCHITCVNKAPTTCPVPPEQTKGPLGIDPQKGIGTAYEGHVRIPKPAGVKKGWQRALAIVCDFKLFLYDIAEGKASQPSVVISQVIDMRDEEFSVSSVLASDVIHASRKDIPCIFRVTASQLSASNNKCSILMLADTENEKNKWVGVLSELHKILKKNKFRDRSVYVPKEAYDSTLPLIKTTQAAAIIDHERIALGNEEGLFVVHVTKDEIIRVGDNKKIHQIELIPNDQLVAVISGRNRHVRLFPMSALDGRETDFYKLSETKGCQTVTSGKVRHGALTCLCVAMKRQVLCYELFQSKTRHRKFKEIQVPYNVQWMAIFSEQLCVGFQSGFLRYPLNGEGNPYSMLHSNDHTLSFIAHQPMDAICAVEISSKEYLLCFNSIGIYTDCQGRRSRQQELMWPANPSSCCYNAPYLSVYSENAVDIFDVNSMEWIQTLPLKKVRPLNNEGSLNLLGLETIRLIYFKNKMAEGDELVVPETSDNSRKQMVRNINNKRRYSFRVPEEERMQQRREMLRDPEMRNKLISNPTNFNHIAHMGPGDGIQILKDLPMNPRPQESRTVFSGSVSIPSITKSRPEPGRSMSASSGLSARSSAQNGSALKREFSGGSYSAKRQPMPSPSEGSLSSGGMDQGSDAPARDFDGEDSDSPRHSTASNSSNLSSPPSPVSPRKTKSLSLESTDRGSWDP'</code></pre>
+</div>
+</div>
+<p>Check how many sequences in the training set are longer than 1200 amino acids.</p>
+<div id="cell-16" class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>long_sqs <span class="op">=</span> []</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sq <span class="kw">in</span> train_sqs:</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(sq) <span class="op">&gt;</span> <span class="dv">1200</span>:</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        long_sqs.append(sq)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(long_sqs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>132</code></pre>
+</div>
+</div>
+<p>Create a function that drops all sequences above a chosen threshold and also returns a list of indices of the sequences that meet the threshold that can be used to obtain the correct labels.</p>
+<div id="cell-18" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> drop_long_sqs(sqs, threshold<span class="op">=</span><span class="dv">1200</span>):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    new_sqs <span class="op">=</span> []</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> []</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, sq <span class="kw">in</span> <span class="bu">enumerate</span>(sqs):</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(sq) <span class="op">&lt;=</span> threshold:</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>            new_sqs.append(sq)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>            idx.append(i)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> new_sqs, idx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Drop all sequences above your threshold.</p>
+<div id="cell-20" class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>trnsqs, trnidx <span class="op">=</span> drop_long_sqs(train_sqs, threshold<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>vldsqs, vldidx <span class="op">=</span> drop_long_sqs(valid_sqs, threshold<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>tstsqs, tstidx <span class="op">=</span> drop_long_sqs(test_sqs, threshold<span class="op">=</span><span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-21" class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(trnidx), <span class="bu">len</span>(vldidx), <span class="bu">len</span>(tstidx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(18066, 1971, 699)</code></pre>
+</div>
+</div>
+<p>Make sure that it worked.</p>
+<div id="cell-23" class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>trnls <span class="op">=</span> <span class="bu">map</span>(<span class="bu">len</span>, trnsqs)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>vldls <span class="op">=</span> <span class="bu">map</span>(<span class="bu">len</span>, vldsqs)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>tstls <span class="op">=</span> <span class="bu">map</span>(<span class="bu">len</span>, tstsqs)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="bu">max</span>(trnls), <span class="bu">max</span>(vldls), <span class="bu">max</span>(tstls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(200, 200, 200)</code></pre>
+</div>
+</div>
+<p>Create a function for zero padding all sequences.</p>
+<div id="cell-25" class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> zero_pad(sq, length<span class="op">=</span><span class="dv">1200</span>):</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    new_sq <span class="op">=</span> sq.copy()</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(new_sq) <span class="op">&lt;</span> length:</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        new_sq.extend([<span class="dv">0</span>] <span class="op">*</span> (length<span class="op">-</span><span class="bu">len</span>(new_sq)))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> new_sq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now encode and zero pad all sequences and make sure that it worked out correctly.</p>
+<div id="cell-27" class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>trn <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(encode, trnsqs))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>vld <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(encode, vldsqs))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>tst <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(encode, tstsqs))</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Length of the first two sequences before zero padding: </span><span class="sc">{</span><span class="bu">len</span>(trn[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span><span class="bu">len</span>(trn[<span class="dv">1</span>])<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>trn <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(partial(zero_pad, length<span class="op">=</span><span class="dv">200</span>), trn))</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>vld <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(partial(zero_pad, length<span class="op">=</span><span class="dv">200</span>), vld))</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>tst <span class="op">=</span> <span class="bu">list</span>(<span class="bu">map</span>(partial(zero_pad, length<span class="op">=</span><span class="dv">200</span>), tst))</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Length of the first two sequences after zero padding:  </span><span class="sc">{</span><span class="bu">len</span>(trn[<span class="dv">0</span>])<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span><span class="bu">len</span>(trn[<span class="dv">1</span>])<span class="sc">}</span><span class="ss">"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Length of the first two sequences before zero padding: 116, 135
+Length of the first two sequences after zero padding:  200, 200</code></pre>
+</div>
+</div>
+<p>Convert the data to <code>torch.tensor</code>s unsing <code>dtype=torch.int64</code> and check for correctness.</p>
+<div id="cell-29" class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>trntns <span class="op">=</span> torch.tensor(trn, dtype<span class="op">=</span>torch.int64)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>vldtns <span class="op">=</span> torch.tensor(vld, dtype<span class="op">=</span>torch.int64)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>tsttns <span class="op">=</span> torch.tensor(tst, dtype<span class="op">=</span>torch.int64)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>trntns.shape, trntns[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([18066, 200]),
+ tensor([11,  9,  1, 10,  2, 10, 10, 10, 10, 13, 18, 10,  6, 10, 10, 18, 16, 16,  9, 17, 10,  2, 16, 11,  4,  4,  1,  8, 12,  4, 15,  8, 14,
+          4, 18,  1,  6, 16, 10,  8,  5, 15,  1,  8, 16, 16,  8,  6, 10,  4,  2, 14, 16, 18, 17, 16, 15,  6,  3, 10,  1, 17,  2, 13, 15,  6,
+          5,  1, 18, 17,  6,  2, 17,  2,  6, 16,  1,  2,  6, 16, 19,  3, 18, 15,  1,  4, 17, 17,  2,  7,  2, 14,  2,  1,  6, 11,  3, 19, 17,
+          6,  1, 15,  2,  2, 15, 18, 14, 13, 10,  4,  7,  7,  7,  7,  7,  7,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+          0,  0]))</code></pre>
+</div>
+</div>
+<div id="cell-30" class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>trntns.shape, vldtns.shape, tsttns.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([18066, 200]), torch.Size([1971, 200]), torch.Size([699, 200]))</code></pre>
+</div>
+</div>
+<p>Obtain the correct labels using the lists of indices obtained from the <code>drop_long_sqs</code> function and convert the lists of labels to tensors in <code>torch.float32</code> format.</p>
+<div id="cell-32" class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>trnlbs <span class="op">=</span> torch.tensor(train_tgs, dtype<span class="op">=</span>torch.float32)[trnidx]</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>vldlbs <span class="op">=</span> torch.tensor(valid_tgs, dtype<span class="op">=</span>torch.float32)[vldidx]</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>tstlbs <span class="op">=</span> torch.tensor(test_tgs, dtype<span class="op">=</span>torch.float32)[tstidx]</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>trnlbs.shape, vldlbs.shape, tstlbs.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([18066]), torch.Size([1971]), torch.Size([699]))</code></pre>
+</div>
+</div>
+<div id="cell-33" class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>trnlbs.<span class="bu">sum</span>().item()<span class="op">/</span>trnlbs.shape[<span class="dv">0</span>], vldlbs.<span class="bu">sum</span>().item()<span class="op">/</span>vldlbs.shape[<span class="dv">0</span>], tstlbs.<span class="bu">sum</span>().item()<span class="op">/</span>tstlbs.shape[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(0.4722129967895494, 0.4657534246575342, 0.5665236051502146)</code></pre>
+</div>
+</div>
+<p>Above ratios tell us that there are slightly less than half soluble proteins in the training an validation data, and slightly more than half in the test set.</p>
+</section>
+<section id="dataset-and-dataloaders" class="level2">
+<h2 class="anchored" data-anchor-id="dataset-and-dataloaders">Dataset and DataLoaders</h2>
+<p>Create a <a href="https://frenio.github.io/atai/core.html#dataset"><code>Dataset</code></a> class and combine tokens and labels into datasets.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L39" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="dataset" class="level3">
+<h3 class="anchored" data-anchor-id="dataset">Dataset</h3>
+<blockquote class="blockquote">
+<pre><code> Dataset (x, y)</code></pre>
+</blockquote>
+<p><em>Combines features and lables in a dataset.</em></p>
+<div id="cell-38" class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>trnds <span class="op">=</span> Dataset(trntns, trnlbs)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>vldds <span class="op">=</span> Dataset(vldtns, vldlbs)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>tstds <span class="op">=</span> Dataset(tsttns, tstlbs)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>trnds[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([11,  9,  1, 10,  2, 10, 10, 10, 10, 13, 18, 10,  6, 10, 10, 18, 16, 16,  9, 17, 10,  2, 16, 11,  4,  4,  1,  8, 12,  4, 15,  8, 14,
+          4, 18,  1,  6, 16, 10,  8,  5, 15,  1,  8, 16, 16,  8,  6, 10,  4,  2, 14, 16, 18, 17, 16, 15,  6,  3, 10,  1, 17,  2, 13, 15,  6,
+          5,  1, 18, 17,  6,  2, 17,  2,  6, 16,  1,  2,  6, 16, 19,  3, 18, 15,  1,  4, 17, 17,  2,  7,  2, 14,  2,  1,  6, 11,  3, 19, 17,
+          6,  1, 15,  2,  2, 15, 18, 14, 13, 10,  4,  7,  7,  7,  7,  7,  7,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+          0,  0]),
+ tensor(0.))</code></pre>
+</div>
+</div>
+<p>Define a <a href="https://frenio.github.io/atai/core.html#dataloaders"><code>DataLoaders</code></a> class and a function that creates your DataLoaders given a train dataset, a valid dataset, and a batch size.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L46" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="dataloaders" class="level3">
+<h3 class="anchored" data-anchor-id="dataloaders">DataLoaders</h3>
+<blockquote class="blockquote">
+<pre><code> DataLoaders (*dls)</code></pre>
+</blockquote>
+<p><em>Combines training and validation data in a DataLoaders object that can be passed to a learner.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L54" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_dls" class="level3">
+<h3 class="anchored" data-anchor-id="get_dls">get_dls</h3>
+<blockquote class="blockquote">
+<pre><code> get_dls (train_ds, valid_ds, bs=32)</code></pre>
+</blockquote>
+<p><em>Turn training and validation set into a DataLoaders object.</em></p>
+<p>Get the DataLoaders object and test it.</p>
+<div id="cell-43" class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trnds, vldds)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="bu">next</span>(<span class="bu">iter</span>(dls.train))[<span class="dv">0</span>][:<span class="dv">5</span>], <span class="bu">next</span>(<span class="bu">iter</span>(dls.train))[<span class="dv">1</span>][:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([[ 4, 16, 20,  1,  8,  5, 16, 10, 12,  1, 14,  5,  3,  1, 10, 17,  8, 12,  9,  1, 15,  9, 10, 20, 15,  6,  9, 17, 15, 10, 10, 14,  6,
+          14, 15,  8,  4, 10, 16,  3, 19, 13,  4, 17, 16, 18,  4, 15, 17,  4,  5, 20, 15, 20, 10, 10, 12,  9, 12, 10,  1, 14, 11, 12,  1,  7,
+          19,  1, 16, 10, 16,  5, 16,  6,  9,  1, 15, 13, 13,  9, 18,  8,  3, 14, 13, 16,  8,  4,  8, 10, 10,  1, 19, 11, 15,  4, 14, 13, 12,
+          15,  8,  6, 20,  1, 13, 18,  3, 16, 10, 13, 16,  3,  1,  7, 18, 10, 20, 18, 18,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0],
+         [ 6,  8,  3, 13,  5, 17, 11, 10,  7,  8,  4,  5,  8, 17,  3, 10,  6,  1,  9, 18, 17, 18,  3, 18,  4, 16,  1,  3,  9, 10, 10,  3, 18,
+          14, 15, 14, 20,  6, 15, 10,  6, 19, 17, 16,  6,  4, 18, 13, 18,  6,  6, 20, 14,  5, 13, 10,  4, 12,  4, 13,  3,  5,  3, 19, 16, 10,
+           8,  6,  1, 15,  9, 19, 17, 12, 13,  4,  6,  4,  4, 11,  8, 10,  7, 15,  6,  7,  1, 20, 15, 15, 15,  4, 10,  4,  1, 18,  3, 16, 15,
+           9, 11,  9, 10, 13,  1,  1, 18,  9, 20, 16, 15,  6,  1,  9, 12, 17,  3, 13,  4,  7, 18, 15,  4,  9,  1,  3,  6,  4,  5,  4, 20, 18,
+          17, 10,  1,  8,  5, 15,  6,  6,  9, 15, 14,  4, 15, 20,  1, 18, 13,  6, 16, 12, 15, 13, 14,  1,  6,  1, 13,  1, 15, 16,  1,  1, 17,
+          15,  1, 14,  6,  1, 15, 13,  6,  1, 18,  1, 18, 14,  3,  4,  4, 17, 13,  5,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0],
+         [ 6, 13,  6, 16, 11,  1,  3, 18,  1,  3, 13, 16, 16,  4, 10,  8, 12,  4, 10, 15,  1, 10, 18, 18, 16,  6, 16,  6, 10, 18, 13, 10,  3,
+           4, 15,  9, 18,  7, 17, 18, 18,  4, 12, 11, 17,  3,  1,  5, 15,  7, 10,  4, 16,  8, 16, 15, 12, 13,  5,  1,  3, 13, 16, 14, 13, 20,
+          20, 16,  6,  1, 11, 15,  5, 20,  9,  1,  9,  2, 10, 15,  3,  9, 15,  2, 18, 18,  1, 20, 10, 10, 19, 15, 14, 16, 14,  8, 17,  9, 16,
+          19, 19,  4,  1, 15,  3, 12, 17,  8, 16, 12, 11, 10,  1, 13,  2,  4, 15, 17,  5, 10, 14,  3, 20, 12,  3, 18, 11, 18,  4, 20, 11, 17,
+          16,  5,  1, 18, 13, 10,  3, 10, 15, 16,  5, 17, 19, 15, 13, 13, 16, 17, 14, 14, 10,  4, 18, 15,  6, 10, 18, 12,  7, 18,  5, 18, 16,
+          16,  8, 17,  6,  1, 18,  8, 12, 10, 20,  9,  6,  9, 14,  8, 10, 10,  6,  5,  4,  4,  1,  4, 16, 10,  8, 14, 14,  6, 18, 18,  4, 10,
+          18,  4],
+         [11,  8, 16,  9, 17, 16,  8, 10, 10, 10,  6,  5,  1,  2,  1,  1, 18,  6,  1, 12, 20,  8,  4, 16,  1,  8,  5,  9,  5,  3,  3, 16,  2,
+           4, 13, 10,  4,  4, 13, 15,  9, 13,  4, 18,  1,  9,  2, 20,  4, 13, 16, 17, 16, 10, 13,  9, 17, 10,  4,  4, 20, 15,  1, 11,  6, 20,
+           3, 19,  6,  4,  5, 18,  7,  3,  3,  9,  1,  3, 14,  1, 13,  4,  6, 10,  3,  4, 18,  5, 17, 20, 13, 11, 18, 13,  5,  8,  6, 11, 16,
+          10, 10,  1, 16,  9,  9,  5,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0],
+         [12, 10, 10,  3,  3,  1, 18,  9, 15,  8, 16,  4,  3, 13, 13,  2,  9,  2, 13, 17,  9,  5,  2, 18,  4, 15, 10, 16, 14,  6, 15, 20, 15,
+          18,  6,  4,  9,  8, 10,  5,  8, 15, 11, 10,  7, 12,  9,  7, 18, 11, 18, 15, 18,  6,  6,  6, 19,  4, 17,  5,  1,  6, 20, 10, 10,  9,
+           7,  3, 13,  2, 15, 11, 10, 14,  8, 16, 15, 18,  3,  6,  9, 17, 16, 13,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+           0,  0]]),
+ tensor([1., 1., 1., 0., 1.]))</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="learner-framework-and-callbacks" class="level2">
+<h2 class="anchored" data-anchor-id="learner-framework-and-callbacks">Learner Framework and Callbacks</h2>
+<p>The flexible callback learner along with the useful callbacks and functions below are obtained from the <a href="https://course.fast.ai/Lessons/lesson16.html">fast.ai 2022 course lesson 16</a> (see also on <a href="https://github.com/fastai/course22p2/blob/master/nbs/09_learner.ipynb">GitHub</a>) and might be adapted depending on what I find most useful along the way.</p>
+<p>Figure out which acceleration device is available and define a functin that sends objects to that device.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L63" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="to_device" class="level3">
+<h3 class="anchored" data-anchor-id="to_device">to_device</h3>
+<blockquote class="blockquote">
+<pre><code> to_device (x, device='cpu')</code></pre>
+</blockquote>
+<p>Define a function that sends objects to the cpu.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L68" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="to_cpu" class="level3">
+<h3 class="anchored" data-anchor-id="to_cpu">to_cpu</h3>
+<blockquote class="blockquote">
+<pre><code> to_cpu (x)</code></pre>
+</blockquote>
+<p>Define exceptions that end the learning process.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L78" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cancelepochexception" class="level3">
+<h3 class="anchored" data-anchor-id="cancelepochexception">CancelEpochException</h3>
+<p><em>Common base class for all non-exit exceptions.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L77" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cancelbatchexception" class="level3">
+<h3 class="anchored" data-anchor-id="cancelbatchexception">CancelBatchException</h3>
+<p><em>Common base class for all non-exit exceptions.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L76" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cancelfitexception" class="level3">
+<h3 class="anchored" data-anchor-id="cancelfitexception">CancelFitException</h3>
+<p><em>Common base class for all non-exit exceptions.</em></p>
+<p>Define a callback class that assigns an order to each callback.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L81" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="callback" class="level3">
+<h3 class="anchored" data-anchor-id="callback">Callback</h3>
+<blockquote class="blockquote">
+<pre><code> Callback ()</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Define a class to be used in the Learner as a context manager to handle callbacks.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L84" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="with_cbs" class="level3">
+<h3 class="anchored" data-anchor-id="with_cbs">with_cbs</h3>
+<blockquote class="blockquote">
+<pre><code> with_cbs (nm)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Define a function that runs callbacks in a list of callbacks.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L97" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="run_cbs" class="level3">
+<h3 class="anchored" data-anchor-id="run_cbs">run_cbs</h3>
+<blockquote class="blockquote">
+<pre><code> run_cbs (cbs, method_nm, learn=None)</code></pre>
+</blockquote>
+<p>Define the learner class.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L103" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="learner" class="level3">
+<h3 class="anchored" data-anchor-id="learner">Learner</h3>
+<blockquote class="blockquote">
+<pre><code> Learner (model, dls=(0,), loss_func=&lt;function mse_loss&gt;, lr=0.1,
+          cbs=None, opt_func=&lt;class 'torch.optim.sgd.SGD'&gt;)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Define a class that inherits from learner that has all the functions needed for training without requiring a train callback.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L159" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="trainlearner" class="level3">
+<h3 class="anchored" data-anchor-id="trainlearner">TrainLearner</h3>
+<blockquote class="blockquote">
+<pre><code> TrainLearner (model, dls=(0,), loss_func=&lt;function mse_loss&gt;, lr=0.1,
+               cbs=None, opt_func=&lt;class 'torch.optim.sgd.SGD'&gt;)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Create a callback that assigns model and batches to the available acceleration device.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L167" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="devicecb" class="level3">
+<h3 class="anchored" data-anchor-id="devicecb">DeviceCB</h3>
+<blockquote class="blockquote">
+<pre><code> DeviceCB (device='cpu')</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Define a callback that runs for a single batch for testing purposes.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L173" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="singlebatchcb" class="level3">
+<h3 class="anchored" data-anchor-id="singlebatchcb">SingleBatchCB</h3>
+<blockquote class="blockquote">
+<pre><code> SingleBatchCB ()</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Create a training callback that provides the learner with all functions necessary for training.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L178" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="traincb" class="level3">
+<h3 class="anchored" data-anchor-id="traincb">TrainCB</h3>
+<blockquote class="blockquote">
+<pre><code> TrainCB (n_inp=1)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Define scheduler callbacks that adjust the learning rate according to a schedule along with a callback that tracks the learining rate applied on every step.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L203" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="recordercb" class="level3">
+<h3 class="anchored" data-anchor-id="recordercb">RecorderCB</h3>
+<blockquote class="blockquote">
+<pre><code> RecorderCB (**d)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L200" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="epochschedcb" class="level3">
+<h3 class="anchored" data-anchor-id="epochschedcb">EpochSchedCB</h3>
+<blockquote class="blockquote">
+<pre><code> EpochSchedCB (sched=None)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L197" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="batchschedcb" class="level3">
+<h3 class="anchored" data-anchor-id="batchschedcb">BatchSchedCB</h3>
+<blockquote class="blockquote">
+<pre><code> BatchSchedCB (sched=None)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L187" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="baseschedcb" class="level3">
+<h3 class="anchored" data-anchor-id="baseschedcb">BaseSchedCB</h3>
+<blockquote class="blockquote">
+<pre><code> BaseSchedCB (sched=None)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Define a metrics callback that facilitates calculation of metrics along with a progress callback that enables the display of metrics, loss, and plots that show the training progress during training.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L224" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="metricscb" class="level3">
+<h3 class="anchored" data-anchor-id="metricscb">MetricsCB</h3>
+<blockquote class="blockquote">
+<pre><code> MetricsCB (*ms, **metrics)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L247" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="progresscb" class="level3">
+<h3 class="anchored" data-anchor-id="progresscb">ProgressCB</h3>
+<blockquote class="blockquote">
+<pre><code> ProgressCB (plot=False)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<p>Finally create a learning rate finder callback and add a function to the learner that enables usage of the learning rate finder using <code>learn.lr_find()</code> syntax.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L277" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="lrfindercb" class="level3">
+<h3 class="anchored" data-anchor-id="lrfindercb">LRFinderCB</h3>
+<blockquote class="blockquote">
+<pre><code> LRFinderCB (gamma=1.3, max_mult=3, av_over=1)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/fastai/nbdev/blob/master/nbdev/showdoc.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="show_doc" class="level3">
+<h3 class="anchored" data-anchor-id="show_doc">show_doc</h3>
+<blockquote class="blockquote">
+<pre><code> show_doc (sym, renderer=None, name:str|None=None, title_level:int=3)</code></pre>
+</blockquote>
+<p><em>Show signature and docstring for <code>sym</code></em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sym</td>
+<td></td>
+<td></td>
+<td>Symbol to document</td>
+</tr>
+<tr class="even">
+<td>renderer</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Optional renderer (defaults to markdown)</td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td>str | None</td>
+<td>None</td>
+<td>Optionally override displayed name of <code>sym</code></td>
+</tr>
+<tr class="even">
+<td>title_level</td>
+<td>int</td>
+<td>3</td>
+<td>Heading level to use for symbol name</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="functions-for-convenient-plotting-of-images" class="level2">
+<h2 class="anchored" data-anchor-id="functions-for-convenient-plotting-of-images">Functions for Convenient Plotting of Images</h2>
+<pre><code>/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/fastcore/docscrape.py:230: UserWarning: Unknown section Other Parameters
+  else: warn(msg)
+/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/fastcore/docscrape.py:230: UserWarning: Unknown section See Also
+  else: warn(msg)</code></pre>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L316" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="show_image" class="level3">
+<h3 class="anchored" data-anchor-id="show_image">show_image</h3>
+<blockquote class="blockquote">
+<pre><code> show_image (im, ax=None, figsize=None, title=None, noframe=True,
+             cmap=None, norm=None, aspect=None, interpolation=None,
+             alpha=None, vmin=None, vmax=None, origin=None, extent=None,
+             interpolation_stage=None, filternorm=True, filterrad=4.0,
+             resample=None, url=None, data=None)</code></pre>
+</blockquote>
+<p><em>Show a PIL or PyTorch image on <code>ax</code>.</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>im</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>ax</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>figsize</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>title</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>noframe</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>cmap</td>
+<td>NoneType</td>
+<td>None</td>
+<td>The Colormap instance or registered colormap name used to map scalar data<br>to colors.<br><br>This parameter is ignored if <em>X</em> is RGB(A).</td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>NoneType</td>
+<td>None</td>
+<td>The normalization method used to scale scalar data to the [0, 1] range<br>before mapping to colors using <em>cmap</em>. By default, a linear scaling is<br>used, mapping the lowest value to 0 and the highest to 1.<br><br>If given, this can be one of the following:<br><br>- An instance of <code>.Normalize</code> or one of its subclasses<br> (see :ref:<code>colormapnorms</code>).<br>- A scale name, i.e.&nbsp;one of “linear”, “log”, “symlog”, “logit”, etc. For a<br> list of available scales, call <code>matplotlib.scale.get_scale_names()</code>.<br> In that case, a suitable <code>.Normalize</code> subclass is dynamically generated<br> and instantiated.<br><br>This parameter is ignored if <em>X</em> is RGB(A).</td>
+</tr>
+<tr class="even">
+<td>aspect</td>
+<td>NoneType</td>
+<td>None</td>
+<td>The aspect ratio of the Axes. This parameter is particularly<br>relevant for images since it determines whether data pixels are<br>square.<br><br>This parameter is a shortcut for explicitly calling<br><code>.Axes.set_aspect</code>. See there for further details.<br><br>- ‘equal’: Ensures an aspect ratio of 1. Pixels will be square<br> (unless pixel sizes are explicitly made non-square in data<br> coordinates using <em>extent</em>).<br>- ‘auto’: The Axes is kept fixed and the aspect is adjusted so<br> that the data fit in the Axes. In general, this will result in<br> non-square pixels.<br><br>Normally, None (the default) means to use :rc:<code>image.aspect</code>. However, if<br>the image uses a transform that does not contain the axes data transform,<br>then None means to not modify the axes aspect at all (in that case, directly<br>call <code>.Axes.set_aspect</code> if desired).</td>
+</tr>
+<tr class="odd">
+<td>interpolation</td>
+<td>NoneType</td>
+<td>None</td>
+<td>The interpolation method used.<br><br>Supported values are ‘none’, ‘antialiased’, ‘nearest’, ‘bilinear’,<br>‘bicubic’, ‘spline16’, ‘spline36’, ‘hanning’, ‘hamming’, ‘hermite’,<br>‘kaiser’, ‘quadric’, ‘catrom’, ‘gaussian’, ‘bessel’, ‘mitchell’,<br>‘sinc’, ‘lanczos’, ‘blackman’.<br><br>The data <em>X</em> is resampled to the pixel size of the image on the<br>figure canvas, using the interpolation method to either up- or<br>downsample the data.<br><br>If <em>interpolation</em> is ‘none’, then for the ps, pdf, and svg<br>backends no down- or upsampling occurs, and the image data is<br>passed to the backend as a native image. Note that different ps,<br>pdf, and svg viewers may display these raw pixels differently. On<br>other backends, ‘none’ is the same as ‘nearest’.<br><br>If <em>interpolation</em> is the default ‘antialiased’, then ‘nearest’<br>interpolation is used if the image is upsampled by more than a<br>factor of three (i.e.&nbsp;the number of display pixels is at least<br>three times the size of the data array). If the upsampling rate is<br>smaller than 3, or the image is downsampled, then ‘hanning’<br>interpolation is used to act as an anti-aliasing filter, unless the<br>image happens to be upsampled by exactly a factor of two or one.<br><br>See<br>:doc:<code>/gallery/images_contours_and_fields/interpolation_methods</code><br>for an overview of the supported interpolation methods, and<br>:doc:<code>/gallery/images_contours_and_fields/image_antialiasing</code> for<br>a discussion of image antialiasing.<br><br>Some interpolation methods require an additional radius parameter,<br>which can be set by <em>filterrad</em>. Additionally, the antigrain image<br>resize filter is controlled by the parameter <em>filternorm</em>.</td>
+</tr>
+<tr class="even">
+<td>alpha</td>
+<td>NoneType</td>
+<td>None</td>
+<td>The alpha blending value, between 0 (transparent) and 1 (opaque).<br>If <em>alpha</em> is an array, the alpha blending values are applied pixel<br>by pixel, and <em>alpha</em> must have the same shape as <em>X</em>.</td>
+</tr>
+<tr class="odd">
+<td>vmin</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>vmax</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>origin</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Place the [0, 0] index of the array in the upper left or lower<br>left corner of the Axes. The convention (the default) ‘upper’ is<br>typically used for matrices and images.<br><br>Note that the vertical axis points upward for ‘lower’<br>but downward for ‘upper’.<br><br>See the :ref:<code>imshow_extent</code> tutorial for<br>examples and a more detailed description.</td>
+</tr>
+<tr class="even">
+<td>extent</td>
+<td>NoneType</td>
+<td>None</td>
+<td>The bounding box in data coordinates that the image will fill.<br>These values may be unitful and match the units of the Axes.<br>The image is stretched individually along x and y to fill the box.<br><br>The default extent is determined by the following conditions.<br>Pixels have unit size in data coordinates. Their centers are on<br>integer coordinates, and their center coordinates range from 0 to<br>columns-1 horizontally and from 0 to rows-1 vertically.<br><br>Note that the direction of the vertical axis and thus the default<br>values for top and bottom depend on <em>origin</em>:<br><br>- For <code>origin == 'upper'</code> the default is<br> <code>(-0.5, numcols-0.5, numrows-0.5, -0.5)</code>.<br>- For <code>origin == 'lower'</code> the default is<br> <code>(-0.5, numcols-0.5, -0.5, numrows-0.5)</code>.<br><br>See the :ref:<code>imshow_extent</code> tutorial for<br>examples and a more detailed description.</td>
+</tr>
+<tr class="odd">
+<td>interpolation_stage</td>
+<td>NoneType</td>
+<td>None</td>
+<td>If ‘data’, interpolation<br>is carried out on the data provided by the user. If ‘rgba’, the<br>interpolation is carried out after the colormapping has been<br>applied (visual interpolation).</td>
+</tr>
+<tr class="even">
+<td>filternorm</td>
+<td>bool</td>
+<td>True</td>
+<td>A parameter for the antigrain image resize filter (see the<br>antigrain documentation). If <em>filternorm</em> is set, the filter<br>normalizes integer values and corrects the rounding errors. It<br>doesn’t do anything with the source floating point values, it<br>corrects only integers according to the rule of 1.0 which means<br>that any sum of pixel weights must be equal to 1.0. So, the<br>filter function must produce a graph of the proper shape.</td>
+</tr>
+<tr class="odd">
+<td>filterrad</td>
+<td>float</td>
+<td>4.0</td>
+<td>The filter radius for filters that have a radius parameter, i.e.<br>when interpolation is one of: ‘sinc’, ‘lanczos’ or ‘blackman’.</td>
+</tr>
+<tr class="even">
+<td>resample</td>
+<td>NoneType</td>
+<td>None</td>
+<td>When <em>True</em>, use a full resampling method. When <em>False</em>, only<br>resample when the output image is larger than the input image.</td>
+</tr>
+<tr class="odd">
+<td>url</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Set the url of the created <code>.AxesImage</code>. See <code>.Artist.set_url</code>.</td>
+</tr>
+<tr class="even">
+<td>data</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L333" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="subplots" class="level3">
+<h3 class="anchored" data-anchor-id="subplots">subplots</h3>
+<blockquote class="blockquote">
+<pre><code> subplots (nrows=1, ncols=1, figsize=None, imsize=3, suptitle=None,
+           sharex:"bool|Literal['none','all','row','col']"=False,
+           sharey:"bool|Literal['none','all','row','col']"=False,
+           squeeze:bool=True, width_ratios:Sequence[float]|None=None,
+           height_ratios:Sequence[float]|None=None,
+           subplot_kw:dict[str,Any]|None=None,
+           gridspec_kw:dict[str,Any]|None=None, **kwargs)</code></pre>
+</blockquote>
+<p><em>A figure and set of subplots to display images of <code>imsize</code> inches.</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>nrows</td>
+<td>int</td>
+<td>1</td>
+<td>Number of rows in returned axes grid</td>
+</tr>
+<tr class="even">
+<td>ncols</td>
+<td>int</td>
+<td>1</td>
+<td>Number of columns in retruned axes grid</td>
+</tr>
+<tr class="odd">
+<td>figsize</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Width, height in inches of the returned figure</td>
+</tr>
+<tr class="even">
+<td>imsize</td>
+<td>int</td>
+<td>3</td>
+<td>Size (in inches) of images that will be displayed in the returned figure</td>
+</tr>
+<tr class="odd">
+<td>suptitle</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Title to be set to returned figure</td>
+</tr>
+<tr class="even">
+<td>sharex</td>
+<td>bool | Literal[‘none’, ‘all’, ‘row’, ‘col’]</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>sharey</td>
+<td>bool | Literal[‘none’, ‘all’, ‘row’, ‘col’]</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>squeeze</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>width_ratios</td>
+<td>Sequence[float] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>height_ratios</td>
+<td>Sequence[float] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>subplot_kw</td>
+<td>dict[str, Any] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>gridspec_kw</td>
+<td>dict[str, Any] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L349" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_grid" class="level3">
+<h3 class="anchored" data-anchor-id="get_grid">get_grid</h3>
+<blockquote class="blockquote">
+<pre><code> get_grid (n, nrows=None, ncols=None, title=None, weight='bold', size=14,
+           figsize=None, imsize=3, suptitle=None,
+           sharex:"bool|Literal['none','all','row','col']"=False,
+           sharey:"bool|Literal['none','all','row','col']"=False,
+           squeeze:bool=True, width_ratios:Sequence[float]|None=None,
+           height_ratios:Sequence[float]|None=None,
+           subplot_kw:dict[str,Any]|None=None,
+           gridspec_kw:dict[str,Any]|None=None)</code></pre>
+</blockquote>
+<p><em>Return a grid of <code>n</code> axes, <code>nrows</code> by <code>ncols</code>.</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>n</td>
+<td></td>
+<td></td>
+<td>Number of axes</td>
+</tr>
+<tr class="even">
+<td>nrows</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Number of rows, defaulting to <code>int(math.sqrt(n))</code></td>
+</tr>
+<tr class="odd">
+<td>ncols</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Number of columns, defaulting to <code>ceil(n/rows)</code></td>
+</tr>
+<tr class="even">
+<td>title</td>
+<td>NoneType</td>
+<td>None</td>
+<td>If passed, title set to the figure</td>
+</tr>
+<tr class="odd">
+<td>weight</td>
+<td>str</td>
+<td>bold</td>
+<td>Title font weight</td>
+</tr>
+<tr class="even">
+<td>size</td>
+<td>int</td>
+<td>14</td>
+<td>Title font size</td>
+</tr>
+<tr class="odd">
+<td>figsize</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Width, height in inches of the returned figure</td>
+</tr>
+<tr class="even">
+<td>imsize</td>
+<td>int</td>
+<td>3</td>
+<td>Size (in inches) of images that will be displayed in the returned figure</td>
+</tr>
+<tr class="odd">
+<td>suptitle</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Title to be set to returned figure</td>
+</tr>
+<tr class="even">
+<td>sharex</td>
+<td>bool | Literal[‘none’, ‘all’, ‘row’, ‘col’]</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>sharey</td>
+<td>bool | Literal[‘none’, ‘all’, ‘row’, ‘col’]</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>squeeze</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>width_ratios</td>
+<td>Sequence[float] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>height_ratios</td>
+<td>Sequence[float] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>subplot_kw</td>
+<td>dict[str, Any] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>gridspec_kw</td>
+<td>dict[str, Any] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L370" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="show_images" class="level3">
+<h3 class="anchored" data-anchor-id="show_images">show_images</h3>
+<blockquote class="blockquote">
+<pre><code> show_images (ims:list, nrows=1, ncols=None, titles=None, noframe=True,
+              figsize=None, imsize=3, suptitle=None,
+              sharex:"bool|Literal['none','all','row','col']"=False,
+              sharey:"bool|Literal['none','all','row','col']"=False,
+              squeeze:bool=True, width_ratios:Sequence[float]|None=None,
+              height_ratios:Sequence[float]|None=None,
+              subplot_kw:dict[str,Any]|None=None,
+              gridspec_kw:dict[str,Any]|None=None)</code></pre>
+</blockquote>
+<p><em>Show all images <code>ims</code> as subplots with <code>nrows</code> using <code>titles</code>.</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ims</td>
+<td>list</td>
+<td></td>
+<td>Images to show</td>
+</tr>
+<tr class="even">
+<td>nrows</td>
+<td>int</td>
+<td>1</td>
+<td>Number of rows in grid</td>
+</tr>
+<tr class="odd">
+<td>ncols</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Number of columns in grid (auto-calculated if None)</td>
+</tr>
+<tr class="even">
+<td>titles</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Optional list of titles for each image</td>
+</tr>
+<tr class="odd">
+<td>noframe</td>
+<td>bool</td>
+<td>True</td>
+<td>Hide axes, yes or no</td>
+</tr>
+<tr class="even">
+<td>figsize</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Width, height in inches of the returned figure</td>
+</tr>
+<tr class="odd">
+<td>imsize</td>
+<td>int</td>
+<td>3</td>
+<td>Size (in inches) of images that will be displayed in the returned figure</td>
+</tr>
+<tr class="even">
+<td>suptitle</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Title to be set to returned figure</td>
+</tr>
+<tr class="odd">
+<td>sharex</td>
+<td>bool | Literal[‘none’, ‘all’, ‘row’, ‘col’]</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sharey</td>
+<td>bool | Literal[‘none’, ‘all’, ‘row’, ‘col’]</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>squeeze</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>width_ratios</td>
+<td>Sequence[float] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>height_ratios</td>
+<td>Sequence[float] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>subplot_kw</td>
+<td>dict[str, Any] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>gridspec_kw</td>
+<td>dict[str, Any] | None</td>
+<td>None</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="activation-statistics-using-hooks" class="level2">
+<h2 class="anchored" data-anchor-id="activation-statistics-using-hooks">Activation Statistics using Hooks</h2>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L424" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="append_stats" class="level3">
+<h3 class="anchored" data-anchor-id="append_stats">append_stats</h3>
+<blockquote class="blockquote">
+<pre><code> append_stats (hook, mod, inp, outp)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L382" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hook" class="level3">
+<h3 class="anchored" data-anchor-id="hook">Hook</h3>
+<blockquote class="blockquote">
+<pre><code> Hook (m, f)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L394" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hooks" class="level3">
+<h3 class="anchored" data-anchor-id="hooks">Hooks</h3>
+<blockquote class="blockquote">
+<pre><code> Hooks (ms, f)</code></pre>
+</blockquote>
+<p>*Built-in mutable sequence.</p>
+<p>If no argument is given, the constructor creates a new empty list. The argument must be an iterable if specified.*</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L406" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hookscallback" class="level3">
+<h3 class="anchored" data-anchor-id="hookscallback">HooksCallback</h3>
+<blockquote class="blockquote">
+<pre><code> HooksCallback (hookfunc, mod_filter=&lt;function noop&gt;, on_train=True,
+                on_valid=False, mods=None)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L424" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="append_stats-1" class="level3">
+<h3 class="anchored" data-anchor-id="append_stats-1">append_stats</h3>
+<blockquote class="blockquote">
+<pre><code> append_stats (hook, mod, inp, outp)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L433" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_hist" class="level3">
+<h3 class="anchored" data-anchor-id="get_hist">get_hist</h3>
+<blockquote class="blockquote">
+<pre><code> get_hist (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L436" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_min" class="level3">
+<h3 class="anchored" data-anchor-id="get_min">get_min</h3>
+<blockquote class="blockquote">
+<pre><code> get_min (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L441" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="activationstats" class="level3">
+<h3 class="anchored" data-anchor-id="activationstats">ActivationStats</h3>
+<blockquote class="blockquote">
+<pre><code> ActivationStats (mod_filter=&lt;function noop&gt;)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+</section>
+</section>
+<section id="functions-for-convenient-memory-management" class="level2">
+<h2 class="anchored" data-anchor-id="functions-for-convenient-memory-management">Functions for Convenient Memory Management</h2>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L464" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="clean_ipython_hist" class="level3">
+<h3 class="anchored" data-anchor-id="clean_ipython_hist">clean_ipython_hist</h3>
+<blockquote class="blockquote">
+<pre><code> clean_ipython_hist ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L479" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="clean_tb" class="level3">
+<h3 class="anchored" data-anchor-id="clean_tb">clean_tb</h3>
+<blockquote class="blockquote">
+<pre><code> clean_tb ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L488" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="clean_mem" class="level3">
+<h3 class="anchored" data-anchor-id="clean_mem">clean_mem</h3>
+<blockquote class="blockquote">
+<pre><code> clean_mem ()</code></pre>
+</blockquote>
+</section>
+</section>
+<section id="weight-initialization-and-general-relu" class="level2">
+<h2 class="anchored" data-anchor-id="weight-initialization-and-general-relu">Weight Initialization and General Relu</h2>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L495" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="init_weights" class="level3">
+<h3 class="anchored" data-anchor-id="init_weights">init_weights</h3>
+<blockquote class="blockquote">
+<pre><code> init_weights (m, leaky=0.0)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L499" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="generalrelu" class="level3">
+<h3 class="anchored" data-anchor-id="generalrelu">GeneralRelu</h3>
+<blockquote class="blockquote">
+<pre><code> GeneralRelu (leak=None, sub=None, maxv=None)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<div id="cell-102" class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>act_genrelu <span class="op">=</span> partial(GeneralRelu, leak<span class="op">=</span><span class="fl">0.1</span>, sub<span class="op">=</span><span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="training-a-model" class="level2">
+<h2 class="anchored" data-anchor-id="training-a-model">Training a Model</h2>
+<p>Obtain a single batch from <code>dls</code> to help with model design.</p>
+<div id="cell-105" class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls.train))[<span class="dv">0</span>]</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>idx, idx.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([[16, 12, 13,  ...,  0,  0,  0],
+         [11,  1, 16,  ...,  0,  0,  0],
+         [11,  3,  6,  ...,  0,  0,  0],
+         ...,
+         [16, 19, 14,  ...,  0,  0,  0],
+         [ 9, 18, 10,  ...,  0,  0,  0],
+         [11, 17, 20,  ...,  0,  0,  0]]),
+ torch.Size([32, 200]))</code></pre>
+</div>
+</div>
+<section id="tiny-resnet" class="level3">
+<h3 class="anchored" data-anchor-id="tiny-resnet">Tiny Resnet</h3>
+<p>Design a model architecture. Define functions to obtain 1D convolutional layers with an activation function and normalization and define a 1D residual block class.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L522" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="resblock1d" class="level3">
+<h3 class="anchored" data-anchor-id="resblock1d">ResBlock1d</h3>
+<blockquote class="blockquote">
+<pre><code> ResBlock1d (ni, nf, stride=1, ks=3, act=&lt;class
+             'torch.nn.modules.activation.ReLU'&gt;, norm=None)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L511" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="conv1d" class="level3">
+<h3 class="anchored" data-anchor-id="conv1d">conv1d</h3>
+<blockquote class="blockquote">
+<pre><code> conv1d (ni, nf, ks=3, stride=2, act=&lt;class
+         'torch.nn.modules.activation.ReLU'&gt;, norm=None, bias=None)</code></pre>
+</blockquote>
+<p>Define a class that switches the rank order from BLC to BCL.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L533" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="reshape" class="level3">
+<h3 class="anchored" data-anchor-id="reshape">Reshape</h3>
+<blockquote class="blockquote">
+<pre><code> Reshape (*args, **kwargs)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>Put the model together.</p>
+<div id="cell-113" class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">1e-2</span></span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>n_embd <span class="op">=</span> <span class="dv">16</span></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trnds, vldds, bs<span class="op">=</span><span class="dv">32</span>)</span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> nn.Sequential(nn.Embedding(vocab_size, n_embd, padding_idx<span class="op">=</span><span class="dv">0</span>), Reshape(),</span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(n_embd, <span class="dv">2</span>, ks<span class="op">=</span><span class="dv">15</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-8"><a href="#cb88-8" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(<span class="dv">2</span>, <span class="dv">4</span>, ks<span class="op">=</span><span class="dv">13</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-9"><a href="#cb88-9" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(<span class="dv">4</span>, <span class="dv">4</span>, ks<span class="op">=</span><span class="dv">11</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-10"><a href="#cb88-10" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(<span class="dv">4</span>, <span class="dv">4</span>, ks<span class="op">=</span><span class="dv">9</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-11"><a href="#cb88-11" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(<span class="dv">4</span>, <span class="dv">8</span>, ks<span class="op">=</span><span class="dv">7</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-12"><a href="#cb88-12" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(<span class="dv">8</span>, <span class="dv">8</span>, ks<span class="op">=</span><span class="dv">5</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-13"><a href="#cb88-13" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(<span class="dv">8</span>, <span class="dv">16</span>, ks<span class="op">=</span><span class="dv">3</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-14"><a href="#cb88-14" aria-hidden="true" tabindex="-1"></a>                      ResBlock1d(<span class="dv">16</span>, <span class="dv">32</span>, ks<span class="op">=</span><span class="dv">3</span>, stride<span class="op">=</span><span class="dv">2</span>, norm<span class="op">=</span>nn.BatchNorm1d, act<span class="op">=</span>act_genrelu), nn.Dropout(<span class="fl">0.1</span>),</span>
+<span id="cb88-15"><a href="#cb88-15" aria-hidden="true" tabindex="-1"></a>                      nn.Flatten(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>),</span>
+<span id="cb88-16"><a href="#cb88-16" aria-hidden="true" tabindex="-1"></a>                      nn.Linear(<span class="dv">32</span>, <span class="dv">1</span>),</span>
+<span id="cb88-17"><a href="#cb88-17" aria-hidden="true" tabindex="-1"></a>                      nn.Flatten(<span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>),</span>
+<span id="cb88-18"><a href="#cb88-18" aria-hidden="true" tabindex="-1"></a>                      nn.Sigmoid())</span>
+<span id="cb88-19"><a href="#cb88-19" aria-hidden="true" tabindex="-1"></a>model(idx).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>torch.Size([32])</code></pre>
+</div>
+</div>
+<div id="cell-114" class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>iw <span class="op">=</span> partial(init_weights, leaky<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> model.<span class="bu">apply</span>(iw)</span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>metrics <span class="op">=</span> MetricsCB(BinaryAccuracy(), BinaryMatthewsCorrCoef(), BinaryAUROC())</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>rec <span class="op">=</span> RecorderCB(lr<span class="op">=</span>_lr, beta1<span class="op">=</span>_beta1, beta2<span class="op">=</span>_beta2)</span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>astats <span class="op">=</span> ActivationStats(fc.risinstance(GeneralRelu))</span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>cbs <span class="op">=</span> [DeviceCB(), BatchSchedCB(), ProgressCB(plot<span class="op">=</span><span class="va">False</span>), metrics, astats, rec]</span>
+<span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cbs = [DeviceCB(), ProgressCB(plot=False), metrics, astats, rec] # for lr_find()</span></span>
+<span id="cb90-8"><a href="#cb90-8" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> TrainLearner(model, dls, F.binary_cross_entropy, lr<span class="op">=</span>lr, cbs<span class="op">=</span>cbs, opt_func<span class="op">=</span>torch.optim.AdamW)</span>
+<span id="cb90-9"><a href="#cb90-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Parameters total: </span><span class="sc">{</span><span class="bu">sum</span>(p.nelement() <span class="cf">for</span> p <span class="kw">in</span> model.parameters())<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb90-10"><a href="#cb90-10" aria-hidden="true" tabindex="-1"></a><span class="co"># learn.lr_find(start_lr=1e-4, gamma=1.05, av_over=5, max_mult=5)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Parameters total: 10175</code></pre>
+</div>
+</div>
+<div id="cell-115" class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>learn.fit(epochs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">BinaryAccuracy</th>
+<th data-quarto-table-cell-role="th">BinaryMatthewsCorrCoef</th>
+<th data-quarto-table-cell-role="th">BinaryAUROC</th>
+<th data-quarto-table-cell-role="th">loss</th>
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0.502</td>
+<td>-0.003</td>
+<td>0.499</td>
+<td>0.732</td>
+<td>0</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.507</td>
+<td>-0.022</td>
+<td>0.480</td>
+<td>0.701</td>
+<td>0</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.513</td>
+<td>0.003</td>
+<td>0.503</td>
+<td>0.698</td>
+<td>1</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.501</td>
+<td>-0.016</td>
+<td>0.494</td>
+<td>0.695</td>
+<td>1</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.528</td>
+<td>0.031</td>
+<td>0.518</td>
+<td>0.692</td>
+<td>2</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.473</td>
+<td>-0.014</td>
+<td>0.490</td>
+<td>0.695</td>
+<td>2</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.540</td>
+<td>0.058</td>
+<td>0.529</td>
+<td>0.689</td>
+<td>3</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.530</td>
+<td>0.026</td>
+<td>0.511</td>
+<td>0.689</td>
+<td>3</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.557</td>
+<td>0.100</td>
+<td>0.557</td>
+<td>0.683</td>
+<td>4</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.545</td>
+<td>0.060</td>
+<td>0.566</td>
+<td>0.681</td>
+<td>4</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.595</td>
+<td>0.185</td>
+<td>0.612</td>
+<td>0.667</td>
+<td>5</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.628</td>
+<td>0.247</td>
+<td>0.657</td>
+<td>0.639</td>
+<td>5</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.636</td>
+<td>0.271</td>
+<td>0.661</td>
+<td>0.641</td>
+<td>6</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.637</td>
+<td>0.266</td>
+<td>0.665</td>
+<td>0.633</td>
+<td>6</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.643</td>
+<td>0.291</td>
+<td>0.675</td>
+<td>0.631</td>
+<td>7</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.643</td>
+<td>0.287</td>
+<td>0.679</td>
+<td>0.626</td>
+<td>7</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.653</td>
+<td>0.313</td>
+<td>0.685</td>
+<td>0.623</td>
+<td>8</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.649</td>
+<td>0.301</td>
+<td>0.683</td>
+<td>0.619</td>
+<td>8</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.657</td>
+<td>0.322</td>
+<td>0.693</td>
+<td>0.617</td>
+<td>9</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.647</td>
+<td>0.291</td>
+<td>0.683</td>
+<td>0.621</td>
+<td>9</td>
+<td>eval</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Inspect the learning rate schedule applied during training.</p>
+<div id="cell-117" class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>rec.plot()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_core_files/figure-html/cell-72-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_core_files/figure-html/cell-72-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_core_files/figure-html/cell-72-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="transformer-model-with-skip-connections-and-layernorm" class="level2">
+<h2 class="anchored" data-anchor-id="transformer-model-with-skip-connections-and-layernorm">Transformer Model with Skip Connections and LayerNorm</h2>
+<p>The transformer model below is adapted from the model built in Andrej Karpathy’s video <a href="https://www.youtube.com/watch?v=kCc8FmEb1nY">Let’s build GPT: from scratch, in code, spelled out</a>.</p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L539" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="head" class="level3">
+<h3 class="anchored" data-anchor-id="head">Head</h3>
+<blockquote class="blockquote">
+<pre><code> Head (head_size)</code></pre>
+</blockquote>
+<p><em>One head of self-attention.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L562" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="feedforward" class="level3">
+<h3 class="anchored" data-anchor-id="feedforward">FeedForward</h3>
+<blockquote class="blockquote">
+<pre><code> FeedForward (n_embed)</code></pre>
+</blockquote>
+<p><em>A simple linear layer followed by a non-linearity.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L573" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="multiheadattention" class="level3">
+<h3 class="anchored" data-anchor-id="multiheadattention">MultiHeadAttention</h3>
+<blockquote class="blockquote">
+<pre><code> MultiHeadAttention (num_heads, head_size)</code></pre>
+</blockquote>
+<p><em>Multiple heads of self-attention in parallel.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L586" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="block" class="level3">
+<h3 class="anchored" data-anchor-id="block">Block</h3>
+<blockquote class="blockquote">
+<pre><code> Block (n_embd, n_head)</code></pre>
+</blockquote>
+<p><em>Transformer block: communication (attention) followed by computation.</em></p>
+<hr>
+<p><a href="https://github.com/frenio/atai/blob/main/atai/core.py#L601" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="transformermodel" class="level3">
+<h3 class="anchored" data-anchor-id="transformermodel">TransformerModel</h3>
+<blockquote class="blockquote">
+<pre><code> TransformerModel (device)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<div id="cell-125" class="cell">
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">1e-3</span></span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>block_size <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>n_embd <span class="op">=</span> <span class="dv">16</span></span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>n_head <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a>n_layer <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a>dropout <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb100-8"><a href="#cb100-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-9"><a href="#cb100-9" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> TransformerModel(device<span class="op">=</span><span class="st">'cpu'</span>)</span>
+<span id="cb100-10"><a href="#cb100-10" aria-hidden="true" tabindex="-1"></a>model(idx).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>torch.Size([32])</code></pre>
+</div>
+</div>
+<div id="cell-126" class="cell">
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trnds, vldds, bs<span class="op">=</span><span class="dv">32</span>)</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> TransformerModel(device<span class="op">=</span>def_device)</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>iw <span class="op">=</span> partial(init_weights, leaky<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> model.<span class="bu">apply</span>(iw)</span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>metrics <span class="op">=</span> MetricsCB(BinaryAccuracy(), BinaryMatthewsCorrCoef(), BinaryAUROC())</span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a>rec <span class="op">=</span> RecorderCB(lr<span class="op">=</span>_lr, beta1<span class="op">=</span>_beta1, beta2<span class="op">=</span>_beta2)</span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a>astats <span class="op">=</span> ActivationStats(fc.risinstance(GeneralRelu))</span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>cbs <span class="op">=</span> [DeviceCB(), BatchSchedCB(), ProgressCB(plot<span class="op">=</span><span class="va">False</span>), metrics, astats, rec]</span>
+<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> TrainLearner(model, dls, F.binary_cross_entropy_with_logits, lr<span class="op">=</span>lr, cbs<span class="op">=</span>cbs, opt_func<span class="op">=</span>optim.AdamW)</span>
+<span id="cb102-10"><a href="#cb102-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Parameters total: </span><span class="sc">{</span><span class="bu">sum</span>(p.nelement() <span class="cf">for</span> p <span class="kw">in</span> model.parameters())<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb102-11"><a href="#cb102-11" aria-hidden="true" tabindex="-1"></a><span class="co">#learn.lr_find(start_lr=1e-5, gamma=1.1, av_over=3, max_mult=5)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Parameters total: 22929</code></pre>
+</div>
+</div>
+<div id="cell-127" class="cell">
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>learn.fit(epochs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">BinaryAccuracy</th>
+<th data-quarto-table-cell-role="th">BinaryMatthewsCorrCoef</th>
+<th data-quarto-table-cell-role="th">BinaryAUROC</th>
+<th data-quarto-table-cell-role="th">loss</th>
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0.520</td>
+<td>0.002</td>
+<td>0.504</td>
+<td>0.767</td>
+<td>0</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.534</td>
+<td>0.041</td>
+<td>0.534</td>
+<td>0.712</td>
+<td>0</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.535</td>
+<td>0.051</td>
+<td>0.537</td>
+<td>0.713</td>
+<td>1</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.539</td>
+<td>0.222</td>
+<td>0.626</td>
+<td>0.692</td>
+<td>1</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.602</td>
+<td>0.189</td>
+<td>0.627</td>
+<td>0.670</td>
+<td>2</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.659</td>
+<td>0.265</td>
+<td>0.683</td>
+<td>0.622</td>
+<td>2</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.632</td>
+<td>0.250</td>
+<td>0.668</td>
+<td>0.639</td>
+<td>3</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.654</td>
+<td>0.310</td>
+<td>0.697</td>
+<td>0.610</td>
+<td>3</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.639</td>
+<td>0.282</td>
+<td>0.687</td>
+<td>0.628</td>
+<td>4</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.660</td>
+<td>0.306</td>
+<td>0.712</td>
+<td>0.614</td>
+<td>4</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.651</td>
+<td>0.308</td>
+<td>0.704</td>
+<td>0.616</td>
+<td>5</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.658</td>
+<td>0.333</td>
+<td>0.721</td>
+<td>0.607</td>
+<td>5</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.656</td>
+<td>0.329</td>
+<td>0.719</td>
+<td>0.604</td>
+<td>6</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.650</td>
+<td>0.346</td>
+<td>0.722</td>
+<td>0.605</td>
+<td>6</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.667</td>
+<td>0.354</td>
+<td>0.737</td>
+<td>0.592</td>
+<td>7</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.662</td>
+<td>0.355</td>
+<td>0.726</td>
+<td>0.596</td>
+<td>7</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.674</td>
+<td>0.366</td>
+<td>0.743</td>
+<td>0.586</td>
+<td>8</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.672</td>
+<td>0.339</td>
+<td>0.726</td>
+<td>0.599</td>
+<td>8</td>
+<td>eval</td>
+</tr>
+<tr class="odd">
+<td>0.672</td>
+<td>0.372</td>
+<td>0.748</td>
+<td>0.583</td>
+<td>9</td>
+<td>train</td>
+</tr>
+<tr class="even">
+<td>0.662</td>
+<td>0.354</td>
+<td>0.725</td>
+<td>0.596</td>
+<td>9</td>
+<td>eval</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="cell-128" class="cell">
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>rec.plot()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_core_files/figure-html/cell-81-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_core_files/figure-html/cell-81-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_core_files/figure-html/cell-81-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/frenio\.github\.io\/atai");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frenio/atai/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
