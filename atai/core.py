@@ -189,7 +189,7 @@ class BaseSchedCB(Callback):
         self.sched = sched
     def before_fit(self, learn): 
         if self.sched == None:
-            self.sched = partial(torch.optim.lr_scheduler.OneCycleLR, max_lr=lr, total_steps=learn.n_epochs*len(learn.dls.train))
+            self.sched = partial(torch.optim.lr_scheduler.OneCycleLR, max_lr=learn.lr, total_steps=learn.n_epochs*len(learn.dls.train))
         self.schedobj = self.sched(learn.opt)
     def step(self, learn):
         if learn.training: self.schedobj.step()
